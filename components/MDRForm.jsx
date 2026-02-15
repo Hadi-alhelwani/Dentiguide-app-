@@ -100,76 +100,200 @@ const FIXATION_PIN_SYSTEMS = [
 const MATERIAL_DETAILS = {
   "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)": {
     manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
-    printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)",
+    ecosystem: "sprintray",
   },
-  "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)": {
+  "Formlabs Surgical Guide Resin (Biocompatible, Autoclavable)": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA",
+    ecosystem: "formlabs",
+  },
+  "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin": {
     manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
-    printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)",
+    ecosystem: "sprintray",
   },
-  "Formlabs Surgical Guide V1 Resin": { manufacturer: "Formlabs Inc., Somerville, MA, USA", printer: "Formlabs Form 3B+ (SLA, 25µm)" },
-  "BEGO VarseoWax Surgical Guide": { manufacturer: "BEGO GmbH, Bremen, Germany", printer: "BEGO Varseo XS (DLP)" },
-  "SprintRay Surgical Guide 3 Resin": { manufacturer: "SprintRay Inc., Los Angeles, CA, USA", printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)" },
-  "Dental LT Clear V2 (Formlabs)": { manufacturer: "Formlabs Inc., Somerville, MA, USA", printer: "Formlabs Form 3B+ (SLA, 25µm)" },
-  "NextDent C&B MFH — Crown & Bridge": { manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands", printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)" },
-  "NextDent Denture 3D+": { manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands", printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)" },
+  "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin": {
+    manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany (via Formlabs)",
+    ecosystem: "formlabs",
+  },
+  "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA",
+    ecosystem: "formlabs",
+  },
+  "NextDent Denture 3D+ — Denture Base Resin": {
+    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
+    ecosystem: "sprintray",
+  },
+  "NextDent C&B MFH — Crown & Bridge Resin": {
+    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
+    ecosystem: "sprintray",
+  },
+};
+
+const ECOSYSTEMS = {
+  sprintray: {
+    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
+    wash: "SprintRay ProWash S",
+    cure: "SprintRay ProCure 2",
+    software: "RayWare",
+  },
+  formlabs: {
+    printer: "Formlabs Form 4B (MSLA, 405nm)",
+    wash: "Formlabs Form Wash",
+    cure: "Formlabs Form Cure V2",
+    software: "PreForm",
+  },
+  milling: {
+    printer: "",
+    wash: "",
+    cure: "",
+    software: "exocad DentalCAD",
+  },
 };
 
 const DEVICE_MATERIAL_PRESETS = {
-  surgical_guide_3d: {
-    material: "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
-    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
-    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing"],
-    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
-    wash: "SprintRay ProWash S",
-    cure: "SprintRay ProCure 2",
-    software: "RayWare",
-    postProcess: "1) IPA 99% wash — 25 min\n2) UV post-cure — 30 min at 60°C\n3) Support removal & finishing\n4) Insert metal drill sleeves\n5) Optional: sterilisation per resin manufacturer's IFU and clinic protocol."
-  },
-  crown_3d: {
-    material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)",
-    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
-    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
-    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
-    wash: "SprintRay ProWash S",
-    cure: "SprintRay ProCure 2",
-    software: "RayWare",
-    postProcess: "1) IPA wash (ProWash S — OnX Tough profile)\n2) Spray screw channels with IPA\n3) Post-cure in ProCure 2 — 5 min (385nm, auto-heat)\n4) Post-cure IPA spray + dry towel wipe\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
-  },
-  bridge_3d: {
-    material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)",
-    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
-    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
-    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
-    wash: "SprintRay ProWash S",
-    cure: "SprintRay ProCure 2",
-    software: "RayWare",
-    postProcess: "1) IPA wash (ProWash S — OnX Tough profile)\n2) Spray screw channels with IPA\n3) Post-cure in ProCure 2 — 5 min (385nm, auto-heat)\n4) Post-cure IPA spray + dry towel wipe\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
-  },
-  ti_denture: {
-    material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)",
-    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
-    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
-    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
-    wash: "SprintRay ProWash S",
-    cure: "SprintRay ProCure 2",
-    software: "RayWare",
-    postProcess: "1) IPA wash (ProWash S — OnX Tough profile)\n2) Post-cure in ProCure 2 — 5 min\n3) Support removal\n4) Bond to titanium bar\n5) Polish for aesthetics"
-  },
+  surgical_guide_3d: [
+    {
+      label: "SprintRay / NextDent",
+      material: "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
+      manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
+      ecosystem: "sprintray",
+      processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing"],
+      postProcess: "1) IPA 99% wash in SprintRay ProWash S — 5 min\n2) Air dry completely\n3) UV post-cure in SprintRay ProCure 2 — 30 min at 60°C\n4) Support removal & finishing\n5) Insert metal drill sleeves\n6) Optional: sterilisation per resin manufacturer's IFU and clinic protocol."
+    },
+    {
+      label: "Formlabs",
+      material: "Formlabs Surgical Guide Resin (Biocompatible, Autoclavable)",
+      manufacturer: "Formlabs Inc., Somerville, MA, USA",
+      ecosystem: "formlabs",
+      processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing"],
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — 5 min\n2) Remove from build platform\n3) Air dry completely — at least 30 min\n4) UV post-cure in Formlabs Form Cure V2 — 30 min at 60°C\n5) Support removal & finishing\n6) Insert metal drill sleeves\n7) Optional: autoclave sterilisation per Formlabs IFU (prevacuum, 134°C/3 min or 121°C/15 min)."
+    },
+  ],
+  crown_3d: [
+    {
+      label: "SprintRay / OnX Tough 2",
+      material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
+      manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
+      ecosystem: "sprintray",
+      processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
+      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC (tack cure between layers, final cure 5 min in ProCure 2)"
+    },
+    {
+      label: "Formlabs / BEGO TriniQ (Permanent)",
+      material: "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin",
+      manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany (via Formlabs)",
+      ecosystem: "formlabs",
+      processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per BEGO IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per BEGO TriniQ IFU settings\n4) Support removal with carbide bur / fibre disc\n5) Polish for aesthetics\n6) Note: Use Form 4 Flex Build Platform + dedicated resin tank only"
+    },
+  ],
+  bridge_3d: [
+    {
+      label: "SprintRay / OnX Tough 2",
+      material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
+      manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
+      ecosystem: "sprintray",
+      processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
+      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
+    },
+    {
+      label: "Formlabs / BEGO TriniQ (Permanent)",
+      material: "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin",
+      manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany (via Formlabs)",
+      ecosystem: "formlabs",
+      processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per BEGO IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per BEGO TriniQ IFU settings\n4) Support removal\n5) Polish for aesthetics\n6) Note: Use Form 4 Flex Build Platform + dedicated resin tank only"
+    },
+  ],
+  crown_zirconia: [
+    {
+      label: "Milled Zirconia",
+      material: "Zirconia Disc (e.g. Ivoclar IPS e.max ZirCAD / Kuraray Noritake)",
+      manufacturer: "",
+      ecosystem: "milling",
+      processes: ["CAD/CAM Milling (Wet)", "Sintering", "Glazing / Staining"],
+      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Sintering — per manufacturer's IFU (typically 1450–1550°C, 6–8h cycle)\n3) Staining / characterisation\n4) Glaze firing\n5) Final inspection & fit check"
+    },
+  ],
+  bridge_zirconia: [
+    {
+      label: "Milled Zirconia",
+      material: "Zirconia Disc (e.g. Ivoclar IPS e.max ZirCAD / Kuraray Noritake)",
+      manufacturer: "",
+      ecosystem: "milling",
+      processes: ["CAD/CAM Milling (Wet)", "Sintering", "Glazing / Staining"],
+      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Sintering — per manufacturer's IFU\n3) Staining / characterisation\n4) Glaze firing\n5) Final inspection & fit check"
+    },
+  ],
+  crown_pmma: [
+    {
+      label: "Milled PMMA",
+      material: "PMMA Disc (e.g. Ivoclar Ivotion / VITA VIONIC)",
+      manufacturer: "",
+      ecosystem: "milling",
+      processes: ["CAD/CAM Milling (Dry)", "Polishing / Finishing"],
+      postProcess: "1) CAD/CAM milling (dry)\n2) Support removal & finishing\n3) Polish for aesthetics\n4) Final inspection & fit check"
+    },
+  ],
+  bridge_pmma: [
+    {
+      label: "Milled PMMA",
+      material: "PMMA Disc (e.g. Ivoclar Ivotion / VITA VIONIC)",
+      manufacturer: "",
+      ecosystem: "milling",
+      processes: ["CAD/CAM Milling (Dry)", "Polishing / Finishing"],
+      postProcess: "1) CAD/CAM milling (dry)\n2) Support removal & finishing\n3) Polish for aesthetics\n4) Final inspection & fit check"
+    },
+  ],
+  titanium_bar: [
+    {
+      label: "Milled Titanium Bar",
+      material: "Grade 5 Titanium (Ti-6Al-4V) Disc",
+      manufacturer: "",
+      ecosystem: "milling",
+      processes: ["CAD/CAM Milling (Wet)", "Polishing / Finishing"],
+      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Support removal & finishing\n3) Sandblasting\n4) Polish for aesthetics\n5) Final inspection & screw-fit check"
+    },
+  ],
+  ti_denture: [
+    {
+      label: "SprintRay / OnX Tough 2 + Ti Bar",
+      material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
+      manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
+      ecosystem: "sprintray",
+      processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
+      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Post-cure in SprintRay ProCure 2 — 5 min\n3) Support removal\n4) Bond to milled titanium bar\n5) Polish for aesthetics"
+    },
+    {
+      label: "Formlabs / Premium Teeth + Ti Bar",
+      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
+      manufacturer: "Formlabs Inc., Somerville, MA, USA",
+      ecosystem: "formlabs",
+      processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per IFU settings\n4) Support removal\n5) Bond to milled titanium bar\n6) Polish for aesthetics"
+    },
+  ],
 };
 
 const MFG_PROCESSES = [
-  "3D Printing (DLP — SprintRay Pro 55S)", "3D Printing (SLA)", "3D Printing (SLS/SLM)",
+  "3D Printing (DLP — SprintRay Pro 55S)", "3D Printing (MSLA — Formlabs Form 4B)",
+  "3D Printing (SLA)", "3D Printing (SLS/SLM)",
   "CAD/CAM Milling (Wet)", "CAD/CAM Milling (Dry)", "Sintering",
-  "IPA Wash", "UV Post-Curing (ProCure 2)",
+  "IPA Wash", "UV Post-Curing (ProCure 2)", "UV Post-Curing (Form Cure V2)",
   "Support Removal / Finishing", "Polishing / Finishing", "Glazing / Staining",
   "Cementation", "Sandblasting",
 ];
 
 const MAT_OPTIONS = [
   "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
-  "Formlabs Surgical Guide V1 Resin","BEGO VarseoWax Surgical Guide",
-  "SprintRay Surgical Guide 3 Resin","Dental LT Clear V2 (Formlabs)",
-  "NextDent C&B MFH — Crown & Bridge","NextDent Denture 3D+",
+  "Formlabs Surgical Guide Resin (Biocompatible, Autoclavable)",
+  "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
+  "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin",
+  "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
+  "NextDent Denture 3D+ — Denture Base Resin",
+  "NextDent C&B MFH — Crown & Bridge Resin",
+  "Zirconia Disc (e.g. Ivoclar IPS e.max ZirCAD / Kuraray Noritake)",
+  "PMMA Disc (e.g. Ivoclar Ivotion / VITA VIONIC)",
+  "Grade 5 Titanium (Ti-6Al-4V) Disc",
 ];
 
 const STEPS = [
@@ -201,8 +325,10 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
     setDevice(p=>({...p,types:p.types.includes(key)?p.types.filter(t=>t!==key):[...p.types,key]}));
     // Auto-fill materials when adding a device type
     if(!device.types.includes(key)) {
-      const preset = DEVICE_MATERIAL_PRESETS[key];
-      if(preset) {
+      const presets = DEVICE_MATERIAL_PRESETS[key];
+      if(presets && presets.length>0) {
+        const preset = presets[0]; // default to first option
+        const eco = ECOSYSTEMS[preset.ecosystem] || {};
         setMaterials(p => {
           const alreadyHas = p.rows.some(r=>r.material===preset.material);
           let rows = [...p.rows];
@@ -214,16 +340,35 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
           return {
             ...p, rows,
             processes: newProcesses,
-            printer: p.printer||preset.printer||"",
-            wash: p.wash||preset.wash||"",
-            cure: p.cure||preset.cure||"",
-            slicingSoftware: p.slicingSoftware||preset.software||"",
-            postProcess: p.postProcess||preset.postProcess||"",
+            printer: p.printer||eco.printer||"",
+            wash: p.wash||eco.wash||"",
+            cure: p.cure||eco.cure||"",
+            slicingSoftware: p.slicingSoftware||eco.software||"",
             postProcessProtocol: p.postProcessProtocol||preset.postProcess||"",
           };
         });
       }
     }
+  };
+  const applyPreset = (preset) => {
+    const eco = ECOSYSTEMS[preset.ecosystem] || {};
+    setMaterials(p => {
+      const alreadyHas = p.rows.some(r=>r.material===preset.material);
+      let rows = [...p.rows];
+      if(!alreadyHas) {
+        const newRow = {material:preset.material,manufacturer:preset.manufacturer,batch:"",ceMarked:true};
+        rows = rows.length===1&&!rows[0].material ? [newRow] : [...rows,newRow];
+      }
+      return {
+        ...p, rows,
+        processes: [...new Set([...(preset.processes||[])])],
+        printer: eco.printer||"",
+        wash: eco.wash||"",
+        cure: eco.cure||"",
+        slicingSoftware: eco.software||"",
+        postProcessProtocol: preset.postProcess||"",
+      };
+    });
   };
   const toggleTooth = (t) => {
     setDevice(p => {
@@ -242,7 +387,7 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
     });
   };
   const addMatRow = () => setMaterials(p=>({...p,rows:[...p.rows,{material:"",manufacturer:"",batch:"",ceMarked:true}]}));
-  const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};if(k==="material"&&MATERIAL_DETAILS[v]){rows[i].manufacturer=MATERIAL_DETAILS[v].manufacturer;}return{...p,rows};});
+  const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};if(k==="material"&&MATERIAL_DETAILS[v]){rows[i].manufacturer=MATERIAL_DETAILS[v].manufacturer;const eco=ECOSYSTEMS[MATERIAL_DETAILS[v].ecosystem];if(eco){return{...p,rows,printer:eco.printer||p.printer,wash:eco.wash||p.wash,cure:eco.cure||p.cure,slicingSoftware:eco.software||p.slicingSoftware};}}return{...p,rows};});
   const esc = (s) => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const fmtDate = (iso) => { if(!iso) return ""; const p=iso.split("-"); return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:iso; };
   const highestClass = device.types.some(t=>DEVICE_TYPES.find(d=>d.key===t)?.class==="IIa")?"IIa":"I";
@@ -388,6 +533,20 @@ ${materials.postProcessProtocol?`<div style="font-size:7.5px;color:#4a6fa5;margi
 
         {step===3&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Materials & Processing</h2><p className="text-sm text-gray-500 mb-5">Specify all materials, equipment, and protocols.</p>
+
+          {/* Ecosystem quick-switch */}
+          {device.types.some(t=>DEVICE_MATERIAL_PRESETS[t]&&DEVICE_MATERIAL_PRESETS[t].length>1)&&<div className="p-3 bg-indigo-50 rounded-xl border border-indigo-200 mb-5">
+            <label className="block text-xs font-semibold text-indigo-700 mb-2">🔄 Quick Switch — Printer Ecosystem</label>
+            <p className="text-xs text-indigo-500 mb-2">Choose your printer ecosystem to auto-fill matching materials, equipment & protocol.</p>
+            <div className="flex flex-wrap gap-2">
+              {(() => {
+                const allPresets = [];
+                device.types.forEach(t => { (DEVICE_MATERIAL_PRESETS[t]||[]).forEach(p => { if(!allPresets.find(x=>x.ecosystem===p.ecosystem)) allPresets.push(p); }); });
+                return allPresets.map(p=><button key={p.label} onClick={()=>applyPreset(p)} className={`px-4 py-2 rounded-lg text-xs font-bold transition border ${materials.printer.includes(p.ecosystem==="sprintray"?"SprintRay":"Formlabs")?"bg-indigo-600 text-white border-indigo-600":"bg-white text-indigo-700 border-indigo-300 hover:bg-indigo-100"}`}>{p.label}</button>);
+              })()}
+            </div>
+          </div>}
+
           {materials.rows.map((r,i)=><div key={i} className="grid grid-cols-4 gap-3 mb-3">
             <div className="col-span-2"><label className="block text-xs font-semibold text-gray-500 mb-1">Material {i+1}</label>
               <select value={r.material} onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">Select...</option>{MAT_OPTIONS.map(m=><option key={m} value={m}>{m}</option>)}<option value="_custom">— Custom —</option></select>
