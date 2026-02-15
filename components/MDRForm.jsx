@@ -387,7 +387,7 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
     });
   };
   const addMatRow = () => setMaterials(p=>({...p,rows:[...p.rows,{material:"",manufacturer:"",batch:"",ceMarked:true}]}));
-  const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};if(k==="material"&&MATERIAL_DETAILS[v]){rows[i].manufacturer=MATERIAL_DETAILS[v].manufacturer;const eco=ECOSYSTEMS[MATERIAL_DETAILS[v].ecosystem];if(eco){return{...p,rows,printer:eco.printer||p.printer,wash:eco.wash||p.wash,cure:eco.cure||p.cure,slicingSoftware:eco.software||p.slicingSoftware};}}return{...p,rows};});
+  const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};if(k==="material"&&MATERIAL_DETAILS[v]){rows[i].manufacturer=MATERIAL_DETAILS[v].manufacturer;const eco=ECOSYSTEMS[MATERIAL_DETAILS[v].ecosystem];if(eco){return{...p,rows,printer:eco.printer,wash:eco.wash,cure:eco.cure,slicingSoftware:eco.software};}}return{...p,rows};});
   const esc = (s) => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const fmtDate = (iso) => { if(!iso) return ""; const p=iso.split("-"); return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:iso; };
   const highestClass = device.types.some(t=>DEVICE_TYPES.find(d=>d.key===t)?.class==="IIa")?"IIa":"I";
