@@ -79,6 +79,7 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
   const [sign, setSign] = useState({ signerName:settings.signer_name||"", signerTitle:settings.signer_title||"Managing Director", credentials:settings.signer_credentials||"", date:new Date().toISOString().split("T")[0], gsprExceptions:"" });
   const [docRef] = useState(()=>{ const y=new Date().getFullYear(); const c=(settings.doc_counter||0)+1; return `CMD-${y}-${String(c).padStart(4,"0")}`; });
   const [downloading, setDownloading] = useState(false);
+  const [clinicSaved, setClinicSaved] = useState("");
 
   const selectClinic = (id) => { const c=clinics.find(x=>x.id===id); if(c) setPrescriber(p=>({...p,name:c.name,big:c.big,practice:c.practice,address:c.address,phone:c.phone,email:c.email})); };
   const toggleDevice = (key) => setDevice(p=>({...p,types:p.types.includes(key)?p.types.filter(t=>t!==key):[...p.types,key]}));
@@ -144,7 +145,7 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
   const download = (html, suffix) => { const blob=new Blob([html],{type:"text/html"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`${docRef}${suffix}.html`; a.click(); };
   const handleDownloadMDR = async () => { setDownloading(true); download(generateMDR(),""); await onSaveCase(docRef,{mfr,prescriber,patient,device,materials,sign}); setDownloading(false); };
   const handleDownloadDelivery = () => download(generateDeliveryNote(),"_DeliveryNote");
-  const handleSaveClinic = async () => { if(!prescriber.name)return; await onSaveClinic({name:prescriber.name,big:prescriber.big,practice:prescriber.practice,address:prescriber.address,phone:prescriber.phone,email:prescriber.email}); };
+  const handleSaveClinic = async () => { if(!prescriber.name)return; setClinicSaved("saving"); const result=await onSaveClinic({name:prescriber.name,big:prescriber.big,practice:prescriber.practice,address:prescriber.address,phone:prescriber.phone,email:prescriber.email}); if(result?.error){setClinicSaved("error");console.error("Clinic save failed:",result.error);}else{setClinicSaved("done");} setTimeout(()=>setClinicSaved(""),3000); };
 
   
   const up=(setter,key)=>(e)=>setter(p=>({...p,[key]:e.target.value}));
@@ -160,7 +161,7 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
           {clinics.length>0&&<div className="mb-5"><label className="block text-xs font-semibold text-gray-500 mb-1">Quick Select</label>
             <select onChange={e=>e.target.value&&selectClinic(e.target.value)} defaultValue="" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">— Select saved clinic —</option>{clinics.map(c=><option key={c.id} value={c.id}>{c.name}{c.practice&&c.practice!==c.name?` (${c.practice})`:""}</option>)}</select></div>}
           <div className="grid grid-cols-2 gap-4"><FormInput label="Dentist / Prescriber Name *" value={prescriber.name} onChange={up(setPrescriber,"name")}/><FormInput label="BIG Register Number" value={prescriber.big} onChange={up(setPrescriber,"big")}/><FormInput label="Practice / Clinic" value={prescriber.practice} onChange={up(setPrescriber,"practice")}/><FormInput label="Phone" value={prescriber.phone} onChange={up(setPrescriber,"phone")}/><FormInput label="Address" value={prescriber.address} onChange={up(setPrescriber,"address")} span={2}/><FormInput label="Rx Order Reference" value={prescriber.orderRef} onChange={up(setPrescriber,"orderRef")}/><FormInput label="Prescription Date" type="date" value={prescriber.prescDate} onChange={up(setPrescriber,"prescDate")}/></div>
-          {prescriber.name&&!clinics.some(c=>c.name===prescriber.name)&&<button onClick={handleSaveClinic} className="mt-4 px-4 py-2 rounded-lg border border-blue-200 text-blue-600 text-sm font-medium hover:bg-blue-50 transition">💾 Save this clinic for future use</button>}
+          {prescriber.name&&!clinics.some(c=>c.name===prescriber.name)&&<button onClick={handleSaveClinic} disabled={clinicSaved==="saving"} className={`mt-4 px-4 py-2 rounded-lg border text-sm font-medium transition ${clinicSaved==="done"?"border-green-300 bg-green-50 text-green-700":clinicSaved==="error"?"border-red-300 bg-red-50 text-red-700":"border-blue-200 text-blue-600 hover:bg-blue-50"}`}>{clinicSaved==="saving"?"⏳ Saving...":clinicSaved==="done"?"✅ Clinic saved!":clinicSaved==="error"?"❌ Error — check console":"💾 Save this clinic for future use"}</button>}
         </div>}
 
         {step===1&&<div>

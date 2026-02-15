@@ -13,7 +13,9 @@ export default function NewFormPage() {
     const{error}=await supabase.from("cases").insert({user_id:user.id,doc_ref:docRef,form_data:formData,status:"final"});
     await supabase.from("settings").update({doc_counter:(settings.doc_counter||0)+1}).eq("id",settings.id);return!error;};
   const saveClinic=async(clinic)=>{const{data:{user}}=await supabase.auth.getUser();
-    const{data}=await supabase.from("clinics").insert({...clinic,user_id:user.id}).select().single();if(data)setClinics(p=>[...p,data]);return data;};
+    const{data,error}=await supabase.from("clinics").insert({...clinic,user_id:user.id}).select().single();
+    if(error){console.error("Save clinic error:",error);return{error};}
+    if(data)setClinics(p=>[...p,data]);return{data};};
   if(loading) return <div className="p-8 text-gray-400">Loading...</div>;
   return <MDRForm settings={settings} clinics={clinics} onSaveCase={saveCase} onSaveClinic={saveClinic}/>;
 }
