@@ -65,31 +65,6 @@ const DESIGN_SOFTWARE = [
   "Other (specify in notes)",
 ];
 
-const PRINTERS = [
-  "SprintRay Pro 55S (DLP, 55µm XY, 385nm UV)",
-  "Formlabs Form 3B+ (SLA, 25µm)",
-  "Formlabs Form 4B (SLA)",
-  "Asiga MAX UV (DLP, 62µm)",
-  "Asiga PRO 4K (DLP, 50µm)",
-  "Ackuretta SOL (DLP)",
-  "Prusa SL1S (MSLA)",
-  "BEGO Varseo XS (DLP)",
-  "Desktop Health Einstein Pro (DLP)",
-  "Amann Girrbach Ceramill DRS (SLM — Metal)",
-  "Other (specify in notes)",
-];
-
-const POST_PROCESSING = [
-  "IPA 99% wash (manual) → UV post-cure → Support removal",
-  "SprintRay ProWash S → ProCure 2 (385nm, auto-heat)",
-  "Formlabs FormWash → FormCure (60°C, 30 min)",
-  "Ultrasonic IPA bath → UV cure → Polishing",
-  "IPA wash → UV post-cure → Metal sleeve insertion → Final inspection",
-  "Sintering (metal) → Finishing → Polishing",
-  "Milling → Sintering → Glazing / Staining",
-  "Other (specify in notes)",
-];
-
 const FIXATION_PIN_SYSTEMS = [
   "Straumann",
   "Neodent",
@@ -572,10 +547,7 @@ ${materials.postProcessProtocol?`<div style="font-size:7.5px;color:#4a6fa5;margi
             <label className="block text-xs font-semibold text-blue-700 mb-3">Equipment</label>
             <div className="grid grid-cols-2 gap-3">
               <div><label className="block text-xs font-semibold text-gray-500 mb-1">Printer</label>
-                <select value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">— Select printer —</option>
-                  {PRINTERS.map(s=><option key={s} value={s}>{s}</option>)}
-                </select></div>
+                <input value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} placeholder="Auto-filled by ecosystem" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
               <div><label className="block text-xs font-semibold text-gray-500 mb-1">Wash Machine</label>
                 <input value={materials.wash} onChange={e=>setMaterials(p=>({...p,wash:e.target.value}))} placeholder="e.g. SprintRay ProWash S" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
               <div><label className="block text-xs font-semibold text-gray-500 mb-1">Cure Machine</label>
