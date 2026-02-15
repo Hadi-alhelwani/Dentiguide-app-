@@ -110,10 +110,6 @@ const MATERIAL_DETAILS = {
     manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
     ecosystem: "sprintray",
   },
-  "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin": {
-    manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany (via Formlabs)",
-    ecosystem: "formlabs",
-  },
   "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)": {
     manufacturer: "Formlabs Inc., Somerville, MA, USA",
     ecosystem: "formlabs",
@@ -178,12 +174,12 @@ const DEVICE_MATERIAL_PRESETS = {
       postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC (tack cure between layers, final cure 5 min in ProCure 2)"
     },
     {
-      label: "Formlabs / BEGO TriniQ (Permanent)",
-      material: "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin",
-      manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany (via Formlabs)",
+      label: "Formlabs / Premium Teeth Resin",
+      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
+      manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per BEGO IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per BEGO TriniQ IFU settings\n4) Support removal with carbide bur / fibre disc\n5) Polish for aesthetics\n6) Note: Use Form 4 Flex Build Platform + dedicated resin tank only"
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per Premium Teeth IFU settings\n4) Support removal with carbide bur / fibre disc\n5) Polish for aesthetics\n6) Note: Use dedicated resin tank & build platform for biocompatible resins"
     },
   ],
   bridge_3d: [
@@ -196,12 +192,12 @@ const DEVICE_MATERIAL_PRESETS = {
       postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
     },
     {
-      label: "Formlabs / BEGO TriniQ (Permanent)",
-      material: "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin",
-      manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany (via Formlabs)",
+      label: "Formlabs / Premium Teeth Resin",
+      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
+      manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per BEGO IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per BEGO TriniQ IFU settings\n4) Support removal\n5) Polish for aesthetics\n6) Note: Use Form 4 Flex Build Platform + dedicated resin tank only"
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per Premium Teeth IFU settings\n4) Support removal\n5) Polish for aesthetics\n6) Note: Use dedicated resin tank & build platform for biocompatible resins"
     },
   ],
   crown_zirconia: [
@@ -287,7 +283,6 @@ const MAT_OPTIONS = [
   "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
   "Formlabs Surgical Guide Resin (Biocompatible, Autoclavable)",
   "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
-  "BEGO VarseoSmile TriniQ — Ceramic-Filled Permanent Resin",
   "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
   "NextDent Denture 3D+ — Denture Base Resin",
   "NextDent C&B MFH — Crown & Bridge Resin",
@@ -353,12 +348,8 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
   const applyPreset = (preset) => {
     const eco = ECOSYSTEMS[preset.ecosystem] || {};
     setMaterials(p => {
-      const alreadyHas = p.rows.some(r=>r.material===preset.material);
-      let rows = [...p.rows];
-      if(!alreadyHas) {
-        const newRow = {material:preset.material,manufacturer:preset.manufacturer,batch:"",ceMarked:true};
-        rows = rows.length===1&&!rows[0].material ? [newRow] : [...rows,newRow];
-      }
+      // Replace all material rows with just the preset material
+      const rows = [{material:preset.material,manufacturer:preset.manufacturer,batch:"",ceMarked:true}];
       return {
         ...p, rows,
         processes: [...new Set([...(preset.processes||[])])],
@@ -431,26 +422,23 @@ ${materials.postProcessProtocol?`<div style="font-size:7.5px;color:#4a6fa5;margi
 <div class="footer"><span>${esc(mfr.name)} · ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} · Generated ${new Date().toLocaleDateString()}</span></div></body></html>`;
   };
 
-  const download = async (html, suffix) => {
-    const container = document.createElement("div");
-    container.innerHTML = html;
-    container.style.cssText = "position:fixed;top:0;left:0;width:210mm;background:#fff;z-index:99999;padding:0;margin:0;";
-    document.body.appendChild(container);
-    try {
-      const html2pdf = (await import("html2pdf.js")).default;
-      await html2pdf().set({
-        margin: [6,11,6,11],
-        filename: `${docRef}${suffix}.pdf`,
-        image: { type:"jpeg", quality:0.98 },
-        html2canvas: { scale:2, useCORS:true, logging:false },
-        jsPDF: { unit:"mm", format:"a4", orientation:"portrait" },
-        pagebreak: { mode:["avoid-all","css","legacy"] },
-      }).from(container).save();
-    } catch(e) { console.error("PDF error:",e); alert("PDF generation failed. Downloading HTML instead."); const blob=new Blob([html],{type:"text/html"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`${docRef}${suffix}.html`; a.click(); }
-    document.body.removeChild(container);
+  const download = (html, suffix) => {
+    const win = window.open("","_blank");
+    if(!win) { alert("Please allow popups to download PDF."); return; }
+    win.document.write(html);
+    win.document.close();
+    // Add print button + auto-trigger
+    const btn = win.document.createElement("div");
+    btn.className = "no-print";
+    btn.innerHTML = `<div style="position:fixed;top:0;left:0;right:0;background:#1a3a5c;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;z-index:99999;font-family:system-ui">
+      <span style="font-size:13px;font-weight:700">📄 ${docRef}${suffix} — Use "Save as PDF" in the print dialog</span>
+      <button onclick="window.print()" style="background:#fff;color:#1a3a5c;border:none;padding:8px 24px;border-radius:6px;font-weight:700;cursor:pointer;font-size:13px">🖨 Print / Save PDF</button>
+    </div><div style="height:50px"></div>`;
+    win.document.body.insertBefore(btn, win.document.body.firstChild);
+    setTimeout(() => win.print(), 500);
   };
-  const handleDownloadMDR = async () => { setDownloading(true); await download(generateMDR(),""); await onSaveCase(docRef,{mfr,prescriber,patient,device,materials,sign}); setDownloading(false); };
-  const handleDownloadDelivery = async () => { setDownloading(true); await download(generateDeliveryNote(),"_DeliveryNote"); setDownloading(false); };
+  const handleDownloadMDR = async () => { setDownloading(true); download(generateMDR(),""); await onSaveCase(docRef,{mfr,prescriber,patient,device,materials,sign}); setDownloading(false); };
+  const handleDownloadDelivery = () => { download(generateDeliveryNote(),"_DeliveryNote"); };
   const handleSaveClinic = async () => { if(!prescriber.name)return; setClinicSaved("saving"); const result=await onSaveClinic({name:prescriber.name,big:prescriber.big,practice:prescriber.practice,address:prescriber.address,phone:prescriber.phone,email:prescriber.email}); if(result?.error){setClinicSaved("error");console.error("Clinic save failed:",result.error);}else{setClinicSaved("done");} setTimeout(()=>setClinicSaved(""),3000); };
 
   
