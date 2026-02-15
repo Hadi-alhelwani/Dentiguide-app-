@@ -431,9 +431,26 @@ ${materials.postProcessProtocol?`<div style="font-size:7.5px;color:#4a6fa5;margi
 <div class="footer"><span>${esc(mfr.name)} · ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} · Generated ${new Date().toLocaleDateString()}</span></div></body></html>`;
   };
 
-  const download = (html, suffix) => { const blob=new Blob([html],{type:"text/html"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`${docRef}${suffix}.html`; a.click(); };
-  const handleDownloadMDR = async () => { setDownloading(true); download(generateMDR(),""); await onSaveCase(docRef,{mfr,prescriber,patient,device,materials,sign}); setDownloading(false); };
-  const handleDownloadDelivery = () => download(generateDeliveryNote(),"_DeliveryNote");
+  const download = async (html, suffix) => {
+    const container = document.createElement("div");
+    container.innerHTML = html;
+    container.style.cssText = "position:fixed;top:0;left:0;width:210mm;background:#fff;z-index:99999;padding:0;margin:0;";
+    document.body.appendChild(container);
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      await html2pdf().set({
+        margin: [6,11,6,11],
+        filename: `${docRef}${suffix}.pdf`,
+        image: { type:"jpeg", quality:0.98 },
+        html2canvas: { scale:2, useCORS:true, logging:false },
+        jsPDF: { unit:"mm", format:"a4", orientation:"portrait" },
+        pagebreak: { mode:["avoid-all","css","legacy"] },
+      }).from(container).save();
+    } catch(e) { console.error("PDF error:",e); alert("PDF generation failed. Downloading HTML instead."); const blob=new Blob([html],{type:"text/html"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`${docRef}${suffix}.html`; a.click(); }
+    document.body.removeChild(container);
+  };
+  const handleDownloadMDR = async () => { setDownloading(true); await download(generateMDR(),""); await onSaveCase(docRef,{mfr,prescriber,patient,device,materials,sign}); setDownloading(false); };
+  const handleDownloadDelivery = async () => { setDownloading(true); await download(generateDeliveryNote(),"_DeliveryNote"); setDownloading(false); };
   const handleSaveClinic = async () => { if(!prescriber.name)return; setClinicSaved("saving"); const result=await onSaveClinic({name:prescriber.name,big:prescriber.big,practice:prescriber.practice,address:prescriber.address,phone:prescriber.phone,email:prescriber.email}); if(result?.error){setClinicSaved("error");console.error("Clinic save failed:",result.error);}else{setClinicSaved("done");} setTimeout(()=>setClinicSaved(""),3000); };
 
   
@@ -594,8 +611,8 @@ ${materials.postProcessProtocol?`<div style="font-size:7.5px;color:#4a6fa5;margi
             <div className="grid grid-cols-3 gap-4"><FormInput label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><FormInput label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><FormInput label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
             <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Appears after name on documents.</p></div></div>
           <div className="flex gap-3 mt-8">
-            <button onClick={handleDownloadMDR} disabled={downloading||!sign.signerName} className="px-6 py-3 rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 transition shadow-sm">📄 Download MDR Statement</button>
-            <button onClick={handleDownloadDelivery} disabled={!sign.signerName} className="px-6 py-3 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 disabled:opacity-40 transition shadow-sm">📦 Download Delivery Note</button></div>
+            <button onClick={handleDownloadMDR} disabled={downloading||!sign.signerName} className="px-6 py-3 rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 transition shadow-sm">{downloading?"⏳ Generating...":"📄 Download MDR PDF"}</button>
+            <button onClick={handleDownloadDelivery} disabled={!sign.signerName} className="px-6 py-3 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 disabled:opacity-40 transition shadow-sm">📦 Download Delivery PDF</button></div>
           <p className="text-xs text-gray-400 mt-3">Both download as HTML — open in browser, then Print → Save as PDF.</p>
         </div>}
       </div>
