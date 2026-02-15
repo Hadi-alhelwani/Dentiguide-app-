@@ -26,6 +26,10 @@ const STEPS = [
   { key:"review", label:"Review & Sign", icon:"✍️" },
 ];
 
+function FormInput({label,value,onChange,type,placeholder,span}) {
+  return <div className={span===2?"col-span-2":""}><label className="block text-xs font-semibold text-gray-500 mb-1">{label}</label><input type={type||"text"} value={value||""} onChange={onChange} placeholder={placeholder||""} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"/></div>;
+}
+
 export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic }) {
   const [step, setStep] = useState(0);
   const mfr = { name:settings.company_name, street:settings.street, postal:settings.postal, city:settings.city, country:settings.country, phone:settings.phone, email:settings.email, prrcName:settings.prrc_name, prrcQual:settings.prrc_qual, site2Name:settings.site2_name, site2Address:settings.site2_address };
@@ -87,7 +91,7 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
   const handleDownloadDelivery = () => download(generateDeliveryNote(),"_DeliveryNote");
   const handleSaveClinic = async () => { if(!prescriber.name)return; await onSaveClinic({name:prescriber.name,big:prescriber.big,practice:prescriber.practice,address:prescriber.address,phone:prescriber.phone,email:prescriber.email}); };
 
-  const Input=({label,value,onChange,type,placeholder,span})=><div className={span===2?"col-span-2":""}><label className="block text-xs font-semibold text-gray-500 mb-1">{label}</label><input type={type||"text"} value={value||""} onChange={onChange} placeholder={placeholder||""} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-blue-500 transition"/></div>;
+  
   const up=(setter,key)=>(e)=>setter(p=>({...p,[key]:e.target.value}));
 
   return (
@@ -100,20 +104,20 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
           <h2 className="text-lg font-bold text-gray-800 mb-1">Prescriber / Clinic</h2><p className="text-sm text-gray-500 mb-5">Select a saved clinic or enter new prescriber details.</p>
           {clinics.length>0&&<div className="mb-5"><label className="block text-xs font-semibold text-gray-500 mb-1">Quick Select</label>
             <select onChange={e=>e.target.value&&selectClinic(e.target.value)} defaultValue="" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">— Select saved clinic —</option>{clinics.map(c=><option key={c.id} value={c.id}>{c.name}{c.practice&&c.practice!==c.name?` (${c.practice})`:""}</option>)}</select></div>}
-          <div className="grid grid-cols-2 gap-4"><Input label="Dentist / Prescriber Name *" value={prescriber.name} onChange={up(setPrescriber,"name")}/><Input label="BIG Register Number" value={prescriber.big} onChange={up(setPrescriber,"big")}/><Input label="Practice / Clinic" value={prescriber.practice} onChange={up(setPrescriber,"practice")}/><Input label="Phone" value={prescriber.phone} onChange={up(setPrescriber,"phone")}/><Input label="Address" value={prescriber.address} onChange={up(setPrescriber,"address")} span={2}/><Input label="Rx Order Reference" value={prescriber.orderRef} onChange={up(setPrescriber,"orderRef")}/><Input label="Prescription Date" type="date" value={prescriber.prescDate} onChange={up(setPrescriber,"prescDate")}/></div>
+          <div className="grid grid-cols-2 gap-4"><FormInput label="Dentist / Prescriber Name *" value={prescriber.name} onChange={up(setPrescriber,"name")}/><FormInput label="BIG Register Number" value={prescriber.big} onChange={up(setPrescriber,"big")}/><FormInput label="Practice / Clinic" value={prescriber.practice} onChange={up(setPrescriber,"practice")}/><FormInput label="Phone" value={prescriber.phone} onChange={up(setPrescriber,"phone")}/><FormInput label="Address" value={prescriber.address} onChange={up(setPrescriber,"address")} span={2}/><FormInput label="Rx Order Reference" value={prescriber.orderRef} onChange={up(setPrescriber,"orderRef")}/><FormInput label="Prescription Date" type="date" value={prescriber.prescDate} onChange={up(setPrescriber,"prescDate")}/></div>
           {prescriber.name&&!clinics.some(c=>c.name===prescriber.name)&&<button onClick={handleSaveClinic} className="mt-4 px-4 py-2 rounded-lg border border-blue-200 text-blue-600 text-sm font-medium hover:bg-blue-50 transition">💾 Save this clinic for future use</button>}
         </div>}
 
         {step===1&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Patient Identification</h2><p className="text-sm text-gray-500 mb-5">Use a patient code for privacy (GDPR).</p>
           <div className="flex gap-3 mb-4">{[["code","Patient Code"],["name","Full Name"]].map(([v,l])=><button key={v} onClick={()=>setPatient(p=>({...p,method:v}))} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${patient.method===v?"bg-blue-600 text-white":"border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>{l}</button>)}</div>
-          <Input label={patient.method==="code"?"Patient Code *":"Patient Name *"} value={patient.identifier} onChange={up(setPatient,"identifier")} placeholder={patient.method==="code"?"e.g. PT-8821":"e.g. Jan de Vries"}/>
+          <FormInput label={patient.method==="code"?"Patient Code *":"Patient Name *"} value={patient.identifier} onChange={up(setPatient,"identifier")} placeholder={patient.method==="code"?"e.g. PT-8821":"e.g. Jan de Vries"}/>
         </div>}
 
         {step===2&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Device Details</h2><p className="text-sm text-gray-500 mb-5">Select device type(s) and tooth positions.</p>
           <div className="grid grid-cols-2 gap-2 mb-5">{DEVICE_TYPES.map(d=><button key={d.key} onClick={()=>toggleDevice(d.key)} className={`text-left px-4 py-3 rounded-lg border text-sm transition ${device.types.includes(d.key)?"border-blue-500 bg-blue-50 text-blue-800 font-semibold":"border-gray-200 text-gray-600 hover:bg-gray-50"}`}>{device.types.includes(d.key)?"☑":"☐"} {d.label}<span className="ml-2 text-xs opacity-60">Class {d.class}</span></button>)}</div>
-          <div className="grid grid-cols-2 gap-4"><Input label="Tooth Positions" value={(device.teeth||[]).join(", ")} onChange={e=>setDevice(p=>({...p,teeth:e.target.value.split(",").map(t=>t.trim()).filter(Boolean)}))} placeholder="e.g. 14, 16, 24 or Full Arch Maxilla" span={2}/><Input label="Design Software" value={device.software} onChange={up(setDevice,"software")} placeholder="e.g. coDiagnostiX"/><Input label="Design Date" type="date" value={device.designDate} onChange={up(setDevice,"designDate")}/><Input label="Lab Reference" value={device.labRef} onChange={up(setDevice,"labRef")}/><Input label="Shade" value={device.shade} onChange={up(setDevice,"shade")}/><Input label="Clinical Notes" value={device.notes} onChange={up(setDevice,"notes")} span={2}/></div>
+          <div className="grid grid-cols-2 gap-4"><FormInput label="Tooth Positions" value={(device.teeth||[]).join(", ")} onChange={e=>setDevice(p=>({...p,teeth:e.target.value.split(",").map(t=>t.trim()).filter(Boolean)}))} placeholder="e.g. 14, 16, 24 or Full Arch Maxilla" span={2}/><FormInput label="Design Software" value={device.software} onChange={up(setDevice,"software")} placeholder="e.g. coDiagnostiX"/><FormInput label="Design Date" type="date" value={device.designDate} onChange={up(setDevice,"designDate")}/><FormInput label="Lab Reference" value={device.labRef} onChange={up(setDevice,"labRef")}/><FormInput label="Shade" value={device.shade} onChange={up(setDevice,"shade")}/><FormInput label="Clinical Notes" value={device.notes} onChange={up(setDevice,"notes")} span={2}/></div>
         </div>}
 
         {step===3&&<div>
@@ -122,17 +126,17 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
             <div className="col-span-2"><label className="block text-xs font-semibold text-gray-500 mb-1">Material {i+1}</label>
               <select value={r.material} onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">Select...</option>{MAT_OPTIONS.map(m=><option key={m} value={m}>{m}</option>)}<option value="_custom">— Custom —</option></select>
               {r.material==="_custom"&&<input placeholder="Enter material" onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm mt-1 outline-none focus:ring-2 focus:ring-blue-500"/>}</div>
-            <Input label="Manufacturer" value={r.manufacturer} onChange={e=>upMat(i,"manufacturer",e.target.value)}/><Input label="Lot/Batch" value={r.batch} onChange={e=>upMat(i,"batch",e.target.value)}/></div>)}
+            <FormInput label="Manufacturer" value={r.manufacturer} onChange={e=>upMat(i,"manufacturer",e.target.value)}/><FormInput label="Lot/Batch" value={r.batch} onChange={e=>upMat(i,"batch",e.target.value)}/></div>)}
           <button onClick={addMatRow} className="text-sm text-blue-600 font-medium hover:underline mb-5">+ Add material row</button>
-          <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4"><Input label="3D Printer" value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} placeholder="e.g. Formlabs Form 3B"/><Input label="Post-Processing" value={materials.postProcess} onChange={e=>setMaterials(p=>({...p,postProcess:e.target.value}))} placeholder="e.g. IPA wash, UV cure"/></div>
+          <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4"><FormInput label="3D Printer" value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} placeholder="e.g. Formlabs Form 3B"/><FormInput label="Post-Processing" value={materials.postProcess} onChange={e=>setMaterials(p=>({...p,postProcess:e.target.value}))} placeholder="e.g. IPA wash, UV cure"/></div>
         </div>}
 
         {step===4&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Review & Sign</h2><p className="text-sm text-gray-500 mb-5">Verify details, then download.</p>
           <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",(device.teeth||[]).join(", ")||"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass]].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
           <div className="border-t border-gray-100 pt-5"><h3 className="text-sm font-semibold text-gray-700 mb-3">Signature</h3>
-            <div className="grid grid-cols-3 gap-4"><Input label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><Input label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><Input label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
-            <div className="mt-3"><Input label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Appears after name on documents.</p></div></div>
+            <div className="grid grid-cols-3 gap-4"><FormInput label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><FormInput label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><FormInput label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
+            <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Appears after name on documents.</p></div></div>
           <div className="flex gap-3 mt-8">
             <button onClick={handleDownloadMDR} disabled={downloading||!sign.signerName} className="px-6 py-3 rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 transition shadow-sm">📄 Download MDR Statement</button>
             <button onClick={handleDownloadDelivery} disabled={!sign.signerName} className="px-6 py-3 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 disabled:opacity-40 transition shadow-sm">📦 Download Delivery Note</button></div>
