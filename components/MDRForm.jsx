@@ -73,29 +73,144 @@ const FIXATION_PIN_SYSTEMS = [
 ];
 
 const MATERIAL_DETAILS = {
-  "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)": {
-    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
-    ecosystem: "sprintray",
+  // ── SprintRay Pro 55S — OEM Resins ──
+  "SprintRay Surgical Guide 3 — Biocompatible, Autoclavable": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
   },
-  "Formlabs Surgical Guide Resin (Biocompatible, Autoclavable)": {
-    manufacturer: "Formlabs Inc., Somerville, MA, USA",
-    ecosystem: "formlabs",
+  "SprintRay OnX Tough 2 — NanoFusion™ Hybrid (MDR/FDA, Fixed Hybrids)": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
   },
-  "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin": {
-    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
-    ecosystem: "sprintray",
+  "SprintRay Ceramic Crown — Nanoceramic (>50% ceramic, Class II, Definitive)": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
   },
-  "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)": {
-    manufacturer: "Formlabs Inc., Somerville, MA, USA",
-    ecosystem: "formlabs",
+  "SprintRay Crown™ (VarseoSmile Crown Plus) — Ceramic-filled (Definitive)": {
+    manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany", ecosystem: "sprintray",
   },
-  "NextDent Denture 3D+ — Denture Base Resin": {
-    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
-    ecosystem: "sprintray",
+  "SprintRay EU Temporary Crown & Teeth — Biocompatible": {
+    manufacturer: "SprintRay Europe GmbH, Iserlohn, Germany", ecosystem: "sprintray",
   },
-  "NextDent C&B MFH — Crown & Bridge Resin": {
-    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
-    ecosystem: "sprintray",
+  "SprintRay EU High Impact Denture Base": {
+    manufacturer: "SprintRay Europe GmbH, Iserlohn, Germany", ecosystem: "sprintray",
+  },
+  "SprintRay Apex Base — Denture Base Resin": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay Apex Teeth — Denture Teeth Resin": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay NightGuard Flex — Occlusal Guard (FDA 510(k))": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay EU Splint Flex — Occlusal Splint": {
+    manufacturer: "SprintRay Europe GmbH, Iserlohn, Germany", ecosystem: "sprintray",
+  },
+  "SprintRay Die & Model 2 Tan — Dental Model": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay Die & Model 2 Gray — Aligner/Ortho Model": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay Try-in 2 — Try-in Dentures": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay IDB 2 — Indirect Bonding Tray": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay Gingiva Mask — Soft Tissue Replica": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay Castable 2 — Investment Casting": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay EU Castable Red — Investment Casting": {
+    manufacturer: "SprintRay Europe GmbH, Iserlohn, Germany", ecosystem: "sprintray",
+  },
+  "SprintRay Retainer — Direct 3D-Printed Retainer": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  "SprintRay Study Model White 2 — Patient Presentation": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA", ecosystem: "sprintray",
+  },
+  // ── SprintRay Pro 55S — Certified Partner Resins ──
+  "DENTCA Crown & Bridge — Temporary C&B Resin": {
+    manufacturer: "DENTCA Inc., Torrance, CA, USA", ecosystem: "sprintray",
+  },
+  "DENTCA Denture Base 2 — Denture Base": {
+    manufacturer: "DENTCA Inc., Torrance, CA, USA", ecosystem: "sprintray",
+  },
+  "DENTCA Denture Teeth — Denture Teeth": {
+    manufacturer: "DENTCA Inc., Torrance, CA, USA", ecosystem: "sprintray",
+  },
+  "BEGO VarseoSmile Temp — Temporary Restorations": {
+    manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany", ecosystem: "sprintray",
+  },
+  "BEGO VarseoSmile Teeth — Denture Teeth": {
+    manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany", ecosystem: "sprintray",
+  },
+  "KeyStone KeyGuide — Surgical Guide": {
+    manufacturer: "KeyStone Industries, Gibbstown, NJ, USA", ecosystem: "sprintray",
+  },
+  "KeyStone KeySplint Soft — Flexible Splint": {
+    manufacturer: "KeyStone Industries, Gibbstown, NJ, USA", ecosystem: "sprintray",
+  },
+  "KeyStone KeySplint Hard — Rigid Splint": {
+    manufacturer: "KeyStone Industries, Gibbstown, NJ, USA", ecosystem: "sprintray",
+  },
+  // ── Formlabs Form 4B — Validated Resins ──
+  "Formlabs Surgical Guide Resin — Biocompatible, Autoclavable": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Premium Teeth Resin — Nano-Ceramic (Temp C&B / All-on-X / Denture Teeth)": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "BEGO VarseoSmile TriniQ Resin — Ceramic-filled (Permanent + Temp C&B, Denture Teeth)": {
+    manufacturer: "BEGO GmbH & Co. KG, Bremen, Germany", ecosystem: "formlabs",
+  },
+  "Formlabs Denture Base Resin — Denture Base (Class II)": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Dental LT Clear Resin V2 — Hard Splints/Night Guards": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Dental LT Comfort Resin — Flexible Splints/Guards": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Precision Model Resin — Restorative Models (>99% accuracy)": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Fast Model Resin — Aligner/Thermoforming Models": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Grey Resin V5 — Diagnostic/General Models": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Custom Tray Resin — Custom Impression Trays": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs IBT Flex Resin — Indirect Bonding Trays": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Formlabs Castable Wax Resin — 20% Wax Fill, Investment Casting": {
+    manufacturer: "Formlabs Inc., Somerville, MA, USA", ecosystem: "formlabs",
+  },
+  "Lucitone Digital Print 3D Denture Base (BAM™ High Impact)": {
+    manufacturer: "Dentsply Sirona Inc., Charlotte, NC, USA", ecosystem: "formlabs",
+  },
+  "Lucitone Digital IPN 3D Premium Tooth — Denture Teeth": {
+    manufacturer: "Dentsply Sirona Inc., Charlotte, NC, USA", ecosystem: "formlabs",
+  },
+  "Lucitone Digital Value 3D — Economy Tooth & Try-in": {
+    manufacturer: "Dentsply Sirona Inc., Charlotte, NC, USA", ecosystem: "formlabs",
+  },
+  // ── Milling Materials (ecosystem-independent) ──
+  "Zirconia Disc (e.g. Ivoclar IPS e.max ZirCAD / Kuraray Noritake)": {
+    manufacturer: "", ecosystem: "milling",
+  },
+  "PMMA Disc (e.g. Ivoclar Ivotion / VITA VIONIC)": {
+    manufacturer: "", ecosystem: "milling",
+  },
+  "Grade 5 Titanium (Ti-6Al-4V) Disc": {
+    manufacturer: "", ecosystem: "milling",
   },
 };
 
@@ -123,16 +238,16 @@ const ECOSYSTEMS = {
 const DEVICE_MATERIAL_PRESETS = {
   surgical_guide_3d: [
     {
-      label: "SprintRay / NextDent",
-      material: "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
-      manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
+      label: "SprintRay",
+      material: "SprintRay Surgical Guide 3 — Biocompatible, Autoclavable",
+      manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing"],
       postProcess: "1) IPA 99% wash in SprintRay ProWash S — 5 min\n2) Air dry completely\n3) UV post-cure in SprintRay ProCure 2 — 30 min at 60°C\n4) Support removal & finishing\n5) Insert metal drill sleeves\n6) Optional: sterilisation per resin manufacturer's IFU and clinic protocol."
     },
     {
       label: "Formlabs",
-      material: "Formlabs Surgical Guide Resin (Biocompatible, Autoclavable)",
+      material: "Formlabs Surgical Guide Resin — Biocompatible, Autoclavable",
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing"],
@@ -142,7 +257,7 @@ const DEVICE_MATERIAL_PRESETS = {
   crown_3d: [
     {
       label: "SprintRay / OnX Tough 2",
-      material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
+      material: "SprintRay OnX Tough 2 — NanoFusion™ Hybrid (MDR/FDA, Fixed Hybrids)",
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
@@ -150,7 +265,7 @@ const DEVICE_MATERIAL_PRESETS = {
     },
     {
       label: "Formlabs / Premium Teeth Resin",
-      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
+      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temp C&B / All-on-X / Denture Teeth)",
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
@@ -160,7 +275,7 @@ const DEVICE_MATERIAL_PRESETS = {
   bridge_3d: [
     {
       label: "SprintRay / OnX Tough 2",
-      material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
+      material: "SprintRay OnX Tough 2 — NanoFusion™ Hybrid (MDR/FDA, Fixed Hybrids)",
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
@@ -168,7 +283,7 @@ const DEVICE_MATERIAL_PRESETS = {
     },
     {
       label: "Formlabs / Premium Teeth Resin",
-      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
+      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temp C&B / All-on-X / Denture Teeth)",
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
@@ -228,7 +343,7 @@ const DEVICE_MATERIAL_PRESETS = {
   ti_denture: [
     {
       label: "SprintRay / OnX Tough 2 + Ti Bar",
-      material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
+      material: "SprintRay OnX Tough 2 — NanoFusion™ Hybrid (MDR/FDA, Fixed Hybrids)",
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
@@ -236,7 +351,7 @@ const DEVICE_MATERIAL_PRESETS = {
     },
     {
       label: "Formlabs / Premium Teeth + Ti Bar",
-      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
+      material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temp C&B / All-on-X / Denture Teeth)",
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
@@ -254,17 +369,7 @@ const MFG_PROCESSES = [
   "Cementation", "Sandblasting",
 ];
 
-const MAT_OPTIONS = [
-  "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
-  "Formlabs Surgical Guide Resin (Biocompatible, Autoclavable)",
-  "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin",
-  "Formlabs Premium Teeth Resin — Nano-Ceramic (Temporary / All-on-X)",
-  "NextDent Denture 3D+ — Denture Base Resin",
-  "NextDent C&B MFH — Crown & Bridge Resin",
-  "Zirconia Disc (e.g. Ivoclar IPS e.max ZirCAD / Kuraray Noritake)",
-  "PMMA Disc (e.g. Ivoclar Ivotion / VITA VIONIC)",
-  "Grade 5 Titanium (Ti-6Al-4V) Disc",
-];
+const MAT_OPTIONS = Object.entries(MATERIAL_DETAILS).map(([name, d]) => ({ name, eco: d.ecosystem }));
 
 const STEPS = [
   { key:"prescriber", label:"Prescriber", icon:"🩺" },
@@ -529,7 +634,7 @@ ${materials.postProcessProtocol?`<div style="font-size:7.5px;color:#4a6fa5;margi
 
           {materials.rows.map((r,i)=><div key={i} className="grid grid-cols-4 gap-3 mb-3">
             <div className="col-span-2"><label className="block text-xs font-semibold text-gray-500 mb-1">Material {i+1}</label>
-              <select value={r.material} onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">Select...</option>{MAT_OPTIONS.map(m=><option key={m} value={m}>{m}</option>)}<option value="_custom">— Custom —</option></select>
+              <select value={r.material} onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">Select...</option>{MAT_OPTIONS.filter(m=>{const activeEco=materials.printer.includes("SprintRay")?"sprintray":materials.printer.includes("Formlabs")?"formlabs":"";return !activeEco||m.eco===activeEco||m.eco==="milling";}).map(m=><option key={m.name} value={m.name}>{m.name}</option>)}<option value="_custom">— Custom —</option></select>
               {r.material==="_custom"&&<input placeholder="Enter material" onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm mt-1 outline-none focus:ring-2 focus:ring-blue-500"/>}</div>
             <FormInput label="Manufacturer" value={r.manufacturer} onChange={e=>upMat(i,"manufacturer",e.target.value)}/><FormInput label="Lot/Batch" value={r.batch} onChange={e=>upMat(i,"batch",e.target.value)}/></div>)}
           <button onClick={addMatRow} className="text-sm text-blue-600 font-medium hover:underline mb-5">+ Add material row</button>
