@@ -2,13 +2,15 @@
 import { useState } from "react";
 
 const DEVICE_TYPES = [
-  { key: "surgical_guide_3d", label: "3D-Printed Surgical Guide", class: "I" },
-  { key: "fixation_pin_guide", label: "Fixation Pin Guide", class: "I" },
-  { key: "immediate_provisional", label: "Immediate Provisional Prosthesis", class: "IIa" },
-  { key: "verification_jig", label: "Verification Jig", class: "I" },
-  { key: "wax_rim", label: "Wax Rim / Bite Block", class: "I" },
-  { key: "custom_tray", label: "Custom Impression Tray", class: "I" },
-  { key: "model", label: "Diagnostic / Surgical Model", class: "I" },
+  { key: "surgical_guide_3d", label: "3D Printed Surgical Guide", class: "I" },
+  { key: "crown_3d", label: "3D Printed Crown(s)", class: "IIa" },
+  { key: "bridge_3d", label: "3D Printed Bridge(s)", class: "IIa" },
+  { key: "crown_zirconia", label: "Milled Zirconia Crown(s)", class: "IIa" },
+  { key: "bridge_zirconia", label: "Milled Zirconia Bridge(s)", class: "IIa" },
+  { key: "crown_pmma", label: "Milled PMMA Crown(s)", class: "IIa" },
+  { key: "bridge_pmma", label: "Milled PMMA Bridge(s)", class: "IIa" },
+  { key: "titanium_bar", label: "Titanium Milled Bar", class: "IIa" },
+  { key: "ti_denture", label: "Ti-Reinforced Denture (PMMA + Ti)", class: "IIa" },
 ];
 
 const TOOTH_POSITIONS = [
@@ -207,7 +209,7 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
           </div>
 
           {/* IMPLANT SYSTEM — show if surgical guide or fixation pin guide selected */}
-          {(device.types.includes("surgical_guide_3d")||device.types.includes("fixation_pin_guide"))&&<div className="mb-5 p-4 bg-blue-50 rounded-xl border border-blue-200">
+          {(device.types.includes("surgical_guide_3d"))&&<div className="mb-5 p-4 bg-blue-50 rounded-xl border border-blue-200">
             <label className="block text-xs font-semibold text-blue-700 mb-2">Implant System</label>
             <select value={device.implantSystem} onChange={e=>setDevice(p=>({...p,implantSystem:e.target.value,sleeveType:""}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500 mb-3">
               <option value="">— Select implant system —</option>
