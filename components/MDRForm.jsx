@@ -256,7 +256,7 @@ const DEVICE_MATERIAL_PRESETS = {
   ],
   crown_3d: [
     {
-      label: "SprintRay / OnX Tough 2",
+      label: "SprintRay",
       material: "SprintRay OnX Tough 2 — NanoFusion™ Hybrid (MDR/FDA, Fixed Hybrids)",
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
@@ -264,7 +264,7 @@ const DEVICE_MATERIAL_PRESETS = {
       postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC (tack cure between layers, final cure 5 min in ProCure 2)"
     },
     {
-      label: "Formlabs / Premium Teeth Resin",
+      label: "Formlabs",
       material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temp C&B / All-on-X / Denture Teeth)",
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
@@ -274,7 +274,7 @@ const DEVICE_MATERIAL_PRESETS = {
   ],
   bridge_3d: [
     {
-      label: "SprintRay / OnX Tough 2",
+      label: "SprintRay",
       material: "SprintRay OnX Tough 2 — NanoFusion™ Hybrid (MDR/FDA, Fixed Hybrids)",
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
@@ -282,7 +282,7 @@ const DEVICE_MATERIAL_PRESETS = {
       postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
     },
     {
-      label: "Formlabs / Premium Teeth Resin",
+      label: "Formlabs",
       material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temp C&B / All-on-X / Denture Teeth)",
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
@@ -342,7 +342,7 @@ const DEVICE_MATERIAL_PRESETS = {
   ],
   ti_denture: [
     {
-      label: "SprintRay / OnX Tough 2 + Ti Bar",
+      label: "SprintRay + Ti Bar",
       material: "SprintRay OnX Tough 2 — NanoFusion™ Hybrid (MDR/FDA, Fixed Hybrids)",
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
@@ -350,7 +350,7 @@ const DEVICE_MATERIAL_PRESETS = {
       postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Post-cure in SprintRay ProCure 2 — 5 min\n3) Support removal\n4) Bond to milled titanium bar\n5) Polish for aesthetics"
     },
     {
-      label: "Formlabs / Premium Teeth + Ti Bar",
+      label: "Formlabs + Ti Bar",
       material: "Formlabs Premium Teeth Resin — Nano-Ceramic (Temp C&B / All-on-X / Denture Teeth)",
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
