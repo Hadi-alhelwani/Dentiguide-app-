@@ -525,159 +525,81 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
 
   const generateMDR = () => {
     const matRows = materials.rows.filter(r=>r.material);
-    // Implantable devices: titanium_bar, ti_denture → 15 years. Everything else → 10 years.
     const isImplantable = device.types.some(t=>["titanium_bar","ti_denture"].includes(t));
     const retention = isImplantable ? "15 years (implantable custom device)" : "10 years (non-implantable custom device)";
     const showPractice = prescriber.practice && prescriber.practice.trim().toLowerCase()!==prescriber.name.trim().toLowerCase();
     const isRestorative = device.types.some(t=>["crown_3d","bridge_3d","crown_zirconia","bridge_zirconia","crown_pmma","bridge_pmma"].includes(t));
-    // Collect device-specific warnings (deduplicated)
     const warningSet = new Set();
     device.types.forEach(t => { (DEVICE_WARNINGS[t]||DEVICE_WARNINGS.surgical_guide_3d).forEach(w => warningSet.add(w)); });
     const warnings = [...warningSet];
-    // Material indication based on device type
-    const matIndication = (() => {
-      if (device.types.some(t=>["crown_3d","bridge_3d","crown_zirconia","bridge_zirconia"].includes(t))) return "Crowns &amp; Fixed Prosthetics";
-      if (device.types.some(t=>["crown_pmma","bridge_pmma"].includes(t))) return "Temporary Restorations";
-      if (device.types.some(t=>["titanium_bar","ti_denture"].includes(t))) return "Implant-Supported Frameworks";
-      return "Surgical Guides";
-    })();
+    const LOGO_B64 = "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";
     return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>EU MDR Annex XIII — ${docRef}</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:8.5px;color:#1e2a3a;line-height:1.35}
-@page{size:A4;margin:7mm 12mm 6mm 12mm}
-@media print{body{font-size:8px;color:#000!important}.no-print{display:none!important}.page-break-avoid{page-break-inside:avoid}}
-.header{background:#1e2a3a;color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.logo-box{width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0}
-.logo-box svg{width:28px;height:28px}
-.header-left{display:flex;align-items:center}
-.header h1{font-size:13px;font-weight:700;letter-spacing:-0.01em}
-.header .sub{font-size:7.5px;opacity:0.8;margin-top:1px}
-.header-right{text-align:right}
-.header-right .company{font-size:11px;font-weight:700;margin-bottom:3px}
-.badge{display:inline-block;border:1px solid rgba(255,255,255,0.35);padding:1.5px 8px;border-radius:10px;font-size:6.5px;font-weight:600;margin-left:3px;letter-spacing:0.02em}
-.ref-bar{display:flex;justify-content:space-between;padding:4px 0;font-size:7.5px;margin:4px 0 3px}
-.box{border:0.5px solid #c0c5ca;margin-bottom:3px;padding:6px 8px}
-.box-title{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#3a5a7a;margin-bottom:3px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.two-col .box{margin-bottom:0}
-.two-col .box:first-child{border-right:none}
-.row{font-size:8px;line-height:1.4;color:#2a3a4a;margin-bottom:0.5px}
-.row strong{color:#1e2a3a}
-.prrc-block{margin-top:3px;border-top:0.5px solid #c0c5ca;padding-top:3px}
-.prrc-title{font-size:6.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#3a5a7a}
-.prrc-name{font-size:9px;font-weight:700;color:#1e2a3a}
-.prrc-qual{font-size:7px;color:#5a7a9a;font-style:italic}
-.prrc-cred{font-size:7.5px;color:#1e2a3a}
-.mat-table{width:100%;border-collapse:collapse;margin:3px 0 2px}
-.mat-table th{text-align:left;padding:2.5px 5px;font-size:7px;font-weight:700;color:#3a5a7a;background:#f0f2f5;border:0.5px solid #c0c5ca}
-.mat-table td{padding:2.5px 5px;font-size:7.5px;border:0.25px solid #c0c5ca}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
-.three-col .col{border:0.5px solid #c0c5ca;padding:5px 7px;background:#f7f9fc;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.three-col .col:not(:first-child){border-left:0.5px solid #c0c5ca}
-.col-title{font-size:7px;font-weight:700;text-transform:uppercase;color:#3a5a7a;margin-bottom:3px}
-.col-row{font-size:7.5px;line-height:1.5}
-.bio-box{background:#f0f2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;font-size:7.5px}
-.warn-item{font-size:7.5px;line-height:1.45;margin-bottom:2px;padding-left:2px}
-.decl-title{font-size:9.5px;font-weight:700;color:#1e2a3a;margin-bottom:3px}
-.decl-item{font-size:7.5px;line-height:1.4;margin-bottom:0.5px;padding-left:4px}
-.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.sig-grid .box{margin-bottom:0}
-.sig-grid .box:first-child{border-right:none}
-.sig-table{width:100%}
-.sig-table td{vertical-align:top;padding:1px 0}
-.sig-label{font-size:6.5px;font-weight:700;text-transform:uppercase;color:#3a5a7a}
-.sig-val{font-size:8px;font-weight:600;color:#1e2a3a}
-.footer-box{border:0.5px solid #c0c5ca;padding:4px 8px;font-size:6.5px;color:#3a5a6a;margin-top:3px}
-.footer-line{border-top:0.5px solid #d0dbe8;margin-top:4px;padding-top:3px;font-size:6px;color:#7a8a9a;display:flex;justify-content:space-between}
-.footer-note{font-size:5.5px;color:#8a9aaa;text-align:center;margin-top:2px}
-.chk{font-weight:600}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:7.5px;color:#1e2a3a;line-height:1.3}
+@page{size:A4;margin:6mm 10mm 5mm 10mm}
+@media print{body{font-size:7px;color:#000!important}.no-print{display:none!important}}
+.hdr{background:#1e2a3a;color:#fff;padding:5px 10px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-left img{height:26px}
+.hdr h1{font-size:11px;font-weight:700}
+.hdr .sub{font-size:6.5px;opacity:0.8}
+.hdr-right{text-align:right}
+.hdr-right .co{font-size:10px;font-weight:700}
+.bdg{display:inline-block;border:1px solid rgba(255,255,255,0.35);padding:1px 6px;border-radius:9px;font-size:5.5px;font-weight:600;margin-left:2px}
+.ref{display:flex;justify-content:space-between;padding:2px 0;font-size:7px;margin:2px 0}
+.bx{border:0.5px solid #c0c5ca;padding:4px 6px;margin-bottom:2px}
+.bt{font-size:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#3a5a7a;margin-bottom:2px}
+.rw{font-size:7.5px;line-height:1.35;color:#2a3a4a;margin-bottom:0px}
+.rw strong{color:#1e2a3a}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.g2 .bx:first-child{border-right:none}
+.g2 .bx{margin-bottom:0}
+.prrc{margin-top:2px;border-top:0.5px solid #c0c5ca;padding-top:2px}
+.mt{width:100%;border-collapse:collapse;margin:2px 0}
+.mt th{text-align:left;padding:2px 4px;font-size:6px;font-weight:700;color:#3a5a7a;background:#f0f2f5;border:0.5px solid #c0c5ca}
+.mt td{padding:2px 4px;font-size:7px;border:0.25px solid #c0c5ca}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:2px}
+.cl{border:0.5px solid #c0c5ca;padding:3px 5px;background:#f7f9fc;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ct{font-size:6px;font-weight:700;text-transform:uppercase;color:#3a5a7a;margin-bottom:2px}
+.cr{font-size:6.5px;line-height:1.4}
+.bio{background:#f0f2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.bg{display:grid;grid-template-columns:1fr 1fr;gap:0;font-size:7px}
+.wi{font-size:7px;line-height:1.35;margin-bottom:1px;padding-left:1px}
+.dt{font-size:9px;font-weight:700;color:#1e2a3a;margin-bottom:2px}
+.di{font-size:7px;line-height:1.3;margin-bottom:0px;padding-left:3px}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.sg .bx{margin-bottom:0}
+.sg .bx:first-child{border-right:none}
+.st{width:100%}
+.st td{vertical-align:top;padding:1px 0}
+.sl{font-size:5.5px;font-weight:700;text-transform:uppercase;color:#3a5a7a}
+.sv{font-size:7.5px;font-weight:600;color:#1e2a3a}
+.fb{border:0.5px solid #c0c5ca;padding:3px 6px;font-size:6px;color:#3a5a6a;margin-top:2px}
+.fl{border-top:0.5px solid #d0dbe8;margin-top:3px;padding-top:2px;font-size:5.5px;color:#7a8a9a;display:flex;justify-content:space-between}
+.fn{font-size:5px;color:#8a9aaa;text-align:center;margin-top:1px}
+.ck{font-weight:600}
 </style></head><body>
-<div class="header">
-<div class="header-left">
-<div class="logo-box"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 12C36 12 25 23 25 38C25 58 50 88 50 88C50 88 75 58 75 38C75 23 64 12 50 12Z" fill="#1e8a6e"/><circle cx="50" cy="36" r="11" fill="#fff"/><path d="M50 28C46 28 42 32 42 36C42 40 46 44 50 44C54 44 58 40 58 36C58 32 54 28 50 28Z" fill="#1e8a6e"/></svg></div>
-<div><h1>EU MDR 2017/745 — Annex XIII</h1><div class="sub">Custom-Made Dental Device Statement</div></div>
-</div>
-<div class="header-right">
-<div class="company">${esc(mfr.name)}</div>
-<span class="badge">Custom-made device</span><span class="badge">EU MDR 2017/745</span><span class="badge">Annex XIII</span>
-</div>
-</div>
-
-<div class="ref-bar"><div>Ref: <strong style="color:#1e5a9a">${docRef}</strong>${device.labRef?` &middot; Lab: <strong>${esc(device.labRef)}</strong>`:""}${prescriber.orderRef?` &middot; Rx: <strong>${esc(prescriber.orderRef)}</strong>`:""} &middot; Date: <strong>${fmtDate(sign.date)}</strong></div><div>Form v1.1</div></div>
-
-<div class="two-col">
-<div class="box"><div class="box-title">Manufacturer (Annex XIII §1)</div>
-<div class="row"><strong>${esc(mfr.name)}</strong></div>
-<div class="row">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}, ${esc(mfr.country)}</div>
-${mfr.prrcName?`<div class="prrc-block"><div class="prrc-title">Person Responsible for Regulatory Compliance (Art. 15)</div><div class="prrc-name">${esc(mfr.prrcName)}</div><div class="prrc-qual">Designated PRRC for ${esc(mfr.name)} under EU MDR 2017/745</div>${mfr.prrcQual?`<div class="prrc-cred">${esc(mfr.prrcQual)}</div>`:""}</div>`:""}</div>
-<div class="box"><div class="box-title">Prescribing Health Professional</div>
-<div class="row"><strong>${esc(prescriber.name)}</strong></div>
-<div class="row">BIG Register: <strong>${esc(prescriber.big)}</strong></div>
-${showPractice?`<div class="row">${esc(prescriber.practice)}</div>`:""} 
-${prescriber.address?`<div class="row">${esc(prescriber.address)}</div>`:""} 
-<div class="row">Prescription: ${fmtDate(prescriber.prescDate)}</div></div>
-</div>
-
-<div class="two-col">
-<div class="box"><div class="box-title">Patient Identification</div>
-<div class="row">${esc(patient.method==="code"?"Patient Code":"Initials")}: <strong>${esc(patient.identifier)}</strong></div></div>
-<div class="box"><div class="box-title">Device Description</div>
-<div class="row"><strong>${esc(deviceLabel)}</strong> &rarr; <em>Indicative: Class ${highestClass}</em> (custom-made device)</div>
-<div class="row">Region: <strong>${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</strong></div>
-${device.implantSystem?`<div class="row">Implant: ${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</div>`:""} 
-${device.sleeveType?`<div class="row">Sleeve: ${esc(device.sleeveType)}</div>`:""} 
-${device.software?`<div class="row">Design: ${esc(device.software)}${device.designDate?` &middot; Completed: ${fmtDate(device.designDate)}`:""}</div>`:""}</div>
-</div>
-
-<div class="box"><div class="box-title">Materials &amp; Traceability (Annex XIII §2(a))</div>
-<table class="mat-table"><thead><tr><th style="width:36%">Material</th><th style="width:26%">Manufacturer</th><th style="width:18%">Lot / Batch</th><th style="width:8%">CE</th><th style="width:12%">Expiry</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td><em>${esc(r.batch||"Per mfr records")}</em></td><td style="text-align:center">${r.ceMarked?"✓":"✗"}</td><td style="text-align:center">—</td></tr>`).join("")}</tbody></table></div>
-
-<div class="three-col">
-<div class="col"><div class="col-title">Manufacturing Processes</div>${materials.processes.map(p=>`<div class="col-row">✓ ${esc(p)}</div>`).join("")}</div>
-<div class="col"><div class="col-title">Equipment</div>
-${materials.printer?`<div class="col-row"><strong>Printer:</strong> ${esc(materials.printer)}</div>`:""} 
-${materials.wash?`<div class="col-row"><strong>Wash:</strong> ${esc(materials.wash)}</div>`:""} 
-${materials.cure?`<div class="col-row"><strong>Cure:</strong> ${esc(materials.cure)}</div>`:""} 
-${materials.slicingSoftware?`<div class="col-row"><strong>Software:</strong> ${esc(materials.slicingSoftware)}</div>`:""}</div>
-<div class="col"><div class="col-title">Post-Processing Protocol</div>
-<div class="col-row" style="white-space:pre-line">${esc(materials.postProcessProtocol||"").replace(/\\n/g,"<br/>")}</div></div>
-</div>
-
-<div class="box bio-box page-break-avoid"><div class="box-title">Biocompatibility Confirmation (Annex I GSPR)</div>
-<div class="bio-grid"><div><span class="chk">[x]</span> CE-marked biocompatible materials used for intended purpose</div><div><span class="chk">[x]</span> ISO 10993 biological safety covered by material manufacturer</div><div><span class="chk">[x]</span> Manufacturer IFU followed</div><div><span class="chk">[x]</span> No known allergens / hazards</div></div></div>
-
-<div class="box page-break-avoid"><div class="box-title">Warnings &amp; Limitations</div>
-${warnings.map(w=>`<div class="warn-item">&bull; ${esc(w)}</div>`).join("")}
-<div style="font-size:6.5px;color:#5a7a9a;text-align:right;margin-top:3px;font-style:italic">Case data consistency verified prior to manufacturing.</div></div>
-
-<div class="box page-break-avoid"><div class="decl-title">Manufacturer's Declaration — EU MDR 2017/745 Annex XIII §1</div>
-<div class="row" style="margin-bottom:3px">The undersigned declares that the custom-made device described herein:</div>
-<div class="decl-item"><strong>1.</strong> Is specifically made following a written prescription by a duly qualified medical practitioner, per Article 2(3) of EU MDR 2017/745;</div>
-<div class="decl-item"><strong>2.</strong> Is intended for the sole use of patient: <strong>${esc(patient.identifier)}</strong>;</div>
-<div class="decl-item"><strong>3.</strong> Conforms to the General Safety and Performance Requirements (GSPR) set out in Annex I;</div>
-<div class="decl-item"><strong>4.</strong> Has been manufactured in accordance with a documented Quality Management System (Article 10(9));</div>
-<div class="decl-item"><strong>5.</strong> Uses CE-marked materials and components per their intended purpose and manufacturer's IFU;</div>
-<div class="decl-item"><strong>6.</strong> Does not bear a CE marking (per Article 20(1) for custom-made devices);</div>
-<div class="decl-item"><strong>7.</strong> Is labelled as &ldquo;custom-made device&rdquo; / &ldquo;Sonderanfertigung&rdquo;;</div>
-<div class="decl-item"><strong>8.</strong> Is exempt from UDI requirements per Article 27(1) as a custom-made device.</div></div>
-
-<div class="sig-grid">
-<div class="box"><div class="box-title">Substances / Tissues (Annex XIII §1(c))</div>
-<div style="font-size:7.5px;line-height:1.7">
-<div>[ ] Medicinal substance &nbsp;&nbsp;&nbsp;&nbsp; [ ] Human blood / plasma</div>
-<div>[ ] Human tissue / cells &nbsp;&nbsp;&nbsp;&nbsp; [ ] Animal tissue / cells</div>
-<div><span class="chk">[x] None of the above</span></div></div></div>
-<div class="box"><div class="box-title">Authorised Signatory</div>
-<table class="sig-table"><tr><td style="width:50%"><div class="sig-label">Name (Print)</div><div class="sig-val">${esc(sign.signerName)}</div></td><td><div class="sig-label">Title / Function</div><div class="sig-val">${esc(sign.signerTitle)}</div></td></tr>
-<tr><td><div class="sig-label">Date</div><div class="sig-val">${fmtDate(sign.date)}</div></td><td><div class="sig-label">Signature</div><div style="border-bottom:1.5px dotted #666;min-height:14px;margin-top:2px"></div></td></tr></table></div>
-</div>
-
-<div class="footer-box">
-<strong>Retention:</strong> ${retention} after placing on market (Annex XIII §4). Report incidents to <strong>BfArM:</strong> medizinprodukte@bfarm.de &middot; &#9632; Exempt from UDI (Art. 27(1)) &amp; CE marking (Art. 20(1)) as custom-made device.</div>
-<div class="footer-line"><span>${esc(mfr.name)} &middot; ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} &middot; EU MDR 2017/745 &middot; Form v1.1</span></div>
-<div class="footer-note">Controlled document — changes require version update &middot; Terminology: &ldquo;Custom-made device&rdquo; as defined in Article 2(3), Regulation (EU) 2017/745.</div>
+<div class="hdr">
+<div class="hdr-left"><img src="data:image/png;base64,${LOGO_B64}" alt="Dentiguide"/><div><h1>EU MDR 2017/745 — Annex XIII</h1><div class="sub">Custom-Made Dental Device Statement</div></div></div>
+<div class="hdr-right"><div class="co">${esc(mfr.name)}</div><span class="bdg">Custom-made device</span><span class="bdg">EU MDR 2017/745</span><span class="bdg">Annex XIII</span></div></div>
+<div class="ref"><div>Ref: <strong style="color:#1e5a9a">${docRef}</strong>${device.labRef?` · Lab: <strong>${esc(device.labRef)}</strong>`:""}${prescriber.orderRef?` · Rx: <strong>${esc(prescriber.orderRef)}</strong>`:""} · Date: <strong>${fmtDate(sign.date)}</strong></div><div>Form v1.1</div></div>
+<div class="g2"><div class="bx"><div class="bt">Manufacturer (Annex XIII §1)</div><div class="rw"><strong>${esc(mfr.name)}</strong></div><div class="rw">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}, ${esc(mfr.country)}</div>${mfr.prrcName?`<div class="prrc"><div style="font-size:6px;font-weight:700;text-transform:uppercase;color:#3a5a7a">Person Responsible for Regulatory Compliance (Art. 15)</div><div style="font-size:8.5px;font-weight:700">${esc(mfr.prrcName)}</div><div style="font-size:6.5px;color:#5a7a9a;font-style:italic">Designated PRRC for ${esc(mfr.name)} under EU MDR 2017/745</div>${mfr.prrcQual?`<div style="font-size:7px">${esc(mfr.prrcQual)}</div>`:""}</div>`:""}</div>
+<div class="bx"><div class="bt">Prescribing Health Professional</div><div class="rw"><strong>${esc(prescriber.name)}</strong></div><div class="rw">BIG Register: <strong>${esc(prescriber.big)}</strong></div>${showPractice?`<div class="rw">${esc(prescriber.practice)}</div>`:""} ${prescriber.address?`<div class="rw">${esc(prescriber.address)}</div>`:""} <div class="rw">Prescription: ${fmtDate(prescriber.prescDate)}</div></div></div>
+<div class="g2"><div class="bx"><div class="bt">Patient Identification</div><div class="rw">${esc(patient.method==="code"?"Patient Code":"Initials")}: <strong>${esc(patient.identifier)}</strong></div></div>
+<div class="bx"><div class="bt">Device Description</div><div class="rw"><strong>${esc(deviceLabel)}</strong> → <em>Indicative: Class ${highestClass}</em> (custom-made device)</div><div class="rw">Region: <strong>${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</strong></div>${device.implantSystem?`<div class="rw">Implant: ${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</div>`:""} ${device.sleeveType?`<div class="rw">Sleeve: ${esc(device.sleeveType)}</div>`:""} ${device.software?`<div class="rw">Design: ${esc(device.software)}${device.designDate?` · Completed: ${fmtDate(device.designDate)}`:""}</div>`:""}</div></div>
+<div class="bx"><div class="bt">Materials &amp; Traceability (Annex XIII §2(a))</div><table class="mt"><thead><tr><th style="width:36%">Material</th><th style="width:26%">Manufacturer</th><th style="width:18%">Lot / Batch</th><th style="width:8%">CE</th><th style="width:12%">Expiry</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td><em>${esc(r.batch||"Per mfr records")}</em></td><td style="text-align:center">${r.ceMarked?"✓":"✗"}</td><td style="text-align:center">—</td></tr>`).join("")}</tbody></table></div>
+<div class="g3"><div class="cl"><div class="ct">Manufacturing Processes</div>${materials.processes.map(p=>`<div class="cr">✓ ${esc(p)}</div>`).join("")}</div>
+<div class="cl"><div class="ct">Equipment</div>${materials.printer?`<div class="cr"><strong>Printer:</strong> ${esc(materials.printer)}</div>`:""} ${materials.wash?`<div class="cr"><strong>Wash:</strong> ${esc(materials.wash)}</div>`:""} ${materials.cure?`<div class="cr"><strong>Cure:</strong> ${esc(materials.cure)}</div>`:""} ${materials.slicingSoftware?`<div class="cr"><strong>Software:</strong> ${esc(materials.slicingSoftware)}</div>`:""}</div>
+<div class="cl"><div class="ct">Post-Processing Protocol</div><div class="cr" style="white-space:pre-line;font-size:6px;line-height:1.35">${esc(materials.postProcessProtocol||"")}</div></div></div>
+<div class="bx bio"><div class="bt">Biocompatibility Confirmation (Annex I GSPR)</div><div class="bg"><div><span class="ck">[x]</span> CE-marked biocompatible materials used for intended purpose</div><div><span class="ck">[x]</span> ISO 10993 biological safety covered by material manufacturer</div><div><span class="ck">[x]</span> Manufacturer IFU followed</div><div><span class="ck">[x]</span> No known allergens / hazards</div></div></div>
+<div class="bx"><div class="bt">Warnings &amp; Limitations</div>${warnings.map(w=>`<div class="wi">• ${esc(w)}</div>`).join("")}<div style="font-size:6px;color:#5a7a9a;text-align:right;font-style:italic">Case data consistency verified prior to manufacturing.</div></div>
+<div class="bx"><div class="dt">Manufacturer's Declaration — EU MDR 2017/745 Annex XIII §1</div><div class="rw" style="margin-bottom:2px">The undersigned declares that the custom-made device described herein:</div><div class="di"><strong>1.</strong> Is specifically made following a written prescription by a duly qualified medical practitioner, per Article 2(3) of EU MDR 2017/745;</div><div class="di"><strong>2.</strong> Is intended for the sole use of patient: <strong>${esc(patient.identifier)}</strong>;</div><div class="di"><strong>3.</strong> Conforms to the General Safety and Performance Requirements (GSPR) set out in Annex I;</div><div class="di"><strong>4.</strong> Has been manufactured in accordance with a documented Quality Management System (Article 10(9));</div><div class="di"><strong>5.</strong> Uses CE-marked materials and components per their intended purpose and manufacturer's IFU;</div><div class="di"><strong>6.</strong> Does not bear a CE marking (per Article 20(1) for custom-made devices);</div><div class="di"><strong>7.</strong> Is labelled as "custom-made device" / "Sonderanfertigung";</div><div class="di"><strong>8.</strong> Is exempt from UDI requirements per Article 27(1) as a custom-made device.</div></div>
+<div class="sg"><div class="bx"><div class="bt">Substances / Tissues (Annex XIII §1(c))</div><div style="font-size:7px;line-height:1.6">[ ] Medicinal substance &nbsp;&nbsp;&nbsp; [ ] Human blood / plasma<br/>[ ] Human tissue / cells &nbsp;&nbsp;&nbsp; [ ] Animal tissue / cells<br/><span class="ck">[x] None of the above</span></div></div>
+<div class="bx"><div class="bt">Authorised Signatory</div><table class="st"><tr><td style="width:50%"><div class="sl">Name (Print)</div><div class="sv">${esc(sign.signerName)}</div></td><td><div class="sl">Title / Function</div><div class="sv">${esc(sign.signerTitle)}</div></td></tr><tr><td><div class="sl">Date</div><div class="sv">${fmtDate(sign.date)}</div></td><td><div class="sl">Signature</div><div style="border-bottom:1px dotted #666;min-height:12px;margin-top:2px"></div></td></tr></table></div></div>
+<div class="fb"><strong>Retention:</strong> ${retention} after placing on market (Annex XIII §4). Report incidents to <strong>BfArM:</strong> medizinprodukte@bfarm.de · ■ Exempt from UDI (Art. 27(1)) &amp; CE marking (Art. 20(1)) as custom-made device.</div>
+<div class="fl"><span>${esc(mfr.name)} · ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} · EU MDR 2017/745 · Form v1.1</span></div>
+<div class="fn">Controlled document — changes require version update · Terminology: "Custom-made device" as defined in Article 2(3), Regulation (EU) 2017/745.</div>
 </body></html>`;
   };
 
