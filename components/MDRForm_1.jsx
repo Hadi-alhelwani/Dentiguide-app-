@@ -52,6 +52,119 @@ const SLEEVE_OPTIONS = {
   "default": ["Pilot Drill Sleeve 2.0mm","Pilot Drill Sleeve 2.2mm","Fully Guided Sleeve (specify in notes)","Open Guide (no sleeve)"],
 };
 
+const DESIGN_SOFTWARE = [
+  "coDiagnostiX (Dental Wings / Straumann)",
+  "exocad DentalCAD (exocad GmbH)",
+  "exocad exoplan (Guided Surgery)",
+  "RealGUIDE (3DIEMME Srl)",
+  "BlueSkyPlan (Blue Sky Bio, LLC)",
+  "Navident (ClaroNav Inc.)",
+  "DTX Studio Implant (Nobel Biocare)",
+  "R2GATE (MegaGen)",
+  "3Shape Implant Studio",
+  "Other (specify in notes)",
+];
+
+const PRINTERS = [
+  "SprintRay Pro 55S (DLP, 55µm XY, 385nm UV)",
+  "Formlabs Form 3B+ (SLA, 25µm)",
+  "Formlabs Form 4B (SLA)",
+  "Asiga MAX UV (DLP, 62µm)",
+  "Asiga PRO 4K (DLP, 50µm)",
+  "Ackuretta SOL (DLP)",
+  "Prusa SL1S (MSLA)",
+  "BEGO Varseo XS (DLP)",
+  "Desktop Health Einstein Pro (DLP)",
+  "Amann Girrbach Ceramill DRS (SLM — Metal)",
+  "Other (specify in notes)",
+];
+
+const POST_PROCESSING = [
+  "IPA 99% wash (manual) → UV post-cure → Support removal",
+  "SprintRay ProWash S → ProCure 2 (385nm, auto-heat)",
+  "Formlabs FormWash → FormCure (60°C, 30 min)",
+  "Ultrasonic IPA bath → UV cure → Polishing",
+  "IPA wash → UV post-cure → Metal sleeve insertion → Final inspection",
+  "Sintering (metal) → Finishing → Polishing",
+  "Milling → Sintering → Glazing / Staining",
+  "Other (specify in notes)",
+];
+
+const FIXATION_PIN_SYSTEMS = [
+  "Straumann",
+  "Neodent",
+  "Megagen",
+  "J Dental Care",
+];
+
+const MATERIAL_DETAILS = {
+  "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)": {
+    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
+    printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)",
+  },
+  "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)": {
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
+    printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)",
+  },
+  "Formlabs Surgical Guide V1 Resin": { manufacturer: "Formlabs Inc., Somerville, MA, USA", printer: "Formlabs Form 3B+ (SLA, 25µm)" },
+  "BEGO VarseoWax Surgical Guide": { manufacturer: "BEGO GmbH, Bremen, Germany", printer: "BEGO Varseo XS (DLP)" },
+  "SprintRay Surgical Guide 3 Resin": { manufacturer: "SprintRay Inc., Los Angeles, CA, USA", printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)" },
+  "Dental LT Clear V2 (Formlabs)": { manufacturer: "Formlabs Inc., Somerville, MA, USA", printer: "Formlabs Form 3B+ (SLA, 25µm)" },
+  "NextDent C&B MFH — Crown & Bridge": { manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands", printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)" },
+  "NextDent Denture 3D+": { manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands", printer: "SprintRay Pro 55S (DLP, 55µm XY, 385nm)" },
+};
+
+const DEVICE_MATERIAL_PRESETS = {
+  surgical_guide_3d: {
+    material: "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
+    manufacturer: "NextDent B.V. (3D Systems), Soesterberg, Netherlands",
+    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing"],
+    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
+    wash: "SprintRay ProWash S",
+    cure: "SprintRay ProCure 2",
+    software: "RayWare",
+    postProcess: "1) IPA 99% wash — 25 min\n2) UV post-cure — 30 min at 60°C\n3) Support removal & finishing\n4) Insert metal drill sleeves\n5) Optional: sterilisation per resin manufacturer's IFU and clinic protocol."
+  },
+  crown_3d: {
+    material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)",
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
+    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
+    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
+    wash: "SprintRay ProWash S",
+    cure: "SprintRay ProCure 2",
+    software: "RayWare",
+    postProcess: "1) IPA wash (ProWash S — OnX Tough profile)\n2) Spray screw channels with IPA\n3) Post-cure in ProCure 2 — 5 min (385nm, auto-heat)\n4) Post-cure IPA spray + dry towel wipe\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
+  },
+  bridge_3d: {
+    material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)",
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
+    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
+    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
+    wash: "SprintRay ProWash S",
+    cure: "SprintRay ProCure 2",
+    software: "RayWare",
+    postProcess: "1) IPA wash (ProWash S — OnX Tough profile)\n2) Spray screw channels with IPA\n3) Post-cure in ProCure 2 — 5 min (385nm, auto-heat)\n4) Post-cure IPA spray + dry towel wipe\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
+  },
+  ti_denture: {
+    material: "SprintRay OnX Tough 2 — Nano-Ceramic Hybrid Resin (Crown & Bridge / Hybrid Denture)",
+    manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
+    processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
+    printer: "SprintRay Pro 55S (DLP, 55µm XY resolution, 385nm UV)",
+    wash: "SprintRay ProWash S",
+    cure: "SprintRay ProCure 2",
+    software: "RayWare",
+    postProcess: "1) IPA wash (ProWash S — OnX Tough profile)\n2) Post-cure in ProCure 2 — 5 min\n3) Support removal\n4) Bond to titanium bar\n5) Polish for aesthetics"
+  },
+};
+
+const MFG_PROCESSES = [
+  "3D Printing (DLP — SprintRay Pro 55S)", "3D Printing (SLA)", "3D Printing (SLS/SLM)",
+  "CAD/CAM Milling (Wet)", "CAD/CAM Milling (Dry)", "Sintering",
+  "IPA Wash", "UV Post-Curing (ProCure 2)",
+  "Support Removal / Finishing", "Polishing / Finishing", "Glazing / Staining",
+  "Cementation", "Sandblasting",
+];
+
 const MAT_OPTIONS = [
   "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
   "Formlabs Surgical Guide V1 Resin","BEGO VarseoWax Surgical Guide",
@@ -76,15 +189,42 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
   const mfr = { name:settings.company_name, street:settings.street, postal:settings.postal, city:settings.city, country:settings.country, phone:settings.phone, email:settings.email, prrcName:settings.prrc_name, prrcQual:settings.prrc_qual, site2Name:settings.site2_name, site2Address:settings.site2_address };
   const [prescriber, setPrescriber] = useState({ name:"",big:"",practice:"",address:"",phone:"",email:"",orderRef:"",prescDate:new Date().toISOString().split("T")[0] });
   const [patient, setPatient] = useState({ method:"code", identifier:"" });
-  const [device, setDevice] = useState({ types:[],teeth:[],shade:"A2",software:"",labRef:"",notes:"",designDate:"",implantSystem:"",implantDetails:"",sleeveType:"",fixationSleeve:"" });
-  const [materials, setMaterials] = useState({ rows:[{material:"",manufacturer:"",batch:"",ceMarked:true}], printer:"",postProcess:"" });
+  const [device, setDevice] = useState({ types:[],teeth:[],shade:"A2",software:"",labRef:"",notes:"",designDate:"",implantSystem:"",implantDetails:"",sleeveType:"",fixationSleeve:"",fixationPinSystem:"" });
+  const [materials, setMaterials] = useState({ rows:[{material:"",manufacturer:"",batch:"",ceMarked:true}], printer:"",postProcess:"",processes:[],wash:"",cure:"",slicingSoftware:"",postProcessProtocol:"" });
   const [sign, setSign] = useState({ signerName:settings.signer_name||"", signerTitle:settings.signer_title||"Managing Director", credentials:settings.signer_credentials||"", date:new Date().toISOString().split("T")[0], gsprExceptions:"" });
   const [docRef] = useState(()=>{ const y=new Date().getFullYear(); const c=(settings.doc_counter||0)+1; return `CMD-${y}-${String(c).padStart(4,"0")}`; });
   const [downloading, setDownloading] = useState(false);
   const [clinicSaved, setClinicSaved] = useState("");
 
   const selectClinic = (id) => { const c=clinics.find(x=>x.id===id); if(c) setPrescriber(p=>({...p,name:c.name,big:c.big,practice:c.practice,address:c.address,phone:c.phone,email:c.email})); };
-  const toggleDevice = (key) => setDevice(p=>({...p,types:p.types.includes(key)?p.types.filter(t=>t!==key):[...p.types,key]}));
+  const toggleDevice = (key) => {
+    setDevice(p=>({...p,types:p.types.includes(key)?p.types.filter(t=>t!==key):[...p.types,key]}));
+    // Auto-fill materials when adding a device type
+    if(!device.types.includes(key)) {
+      const preset = DEVICE_MATERIAL_PRESETS[key];
+      if(preset) {
+        setMaterials(p => {
+          const alreadyHas = p.rows.some(r=>r.material===preset.material);
+          let rows = [...p.rows];
+          if(!alreadyHas) {
+            const newRow = {material:preset.material,manufacturer:preset.manufacturer,batch:"",ceMarked:true};
+            rows = rows.length===1&&!rows[0].material ? [newRow] : [...rows,newRow];
+          }
+          const newProcesses = [...new Set([...p.processes,...(preset.processes||[])])];
+          return {
+            ...p, rows,
+            processes: newProcesses,
+            printer: p.printer||preset.printer||"",
+            wash: p.wash||preset.wash||"",
+            cure: p.cure||preset.cure||"",
+            slicingSoftware: p.slicingSoftware||preset.software||"",
+            postProcess: p.postProcess||preset.postProcess||"",
+            postProcessProtocol: p.postProcessProtocol||preset.postProcess||"",
+          };
+        });
+      }
+    }
+  };
   const toggleTooth = (t) => {
     setDevice(p => {
       const has = p.teeth.includes(t);
@@ -102,7 +242,7 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
     });
   };
   const addMatRow = () => setMaterials(p=>({...p,rows:[...p.rows,{material:"",manufacturer:"",batch:"",ceMarked:true}]}));
-  const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};return{...p,rows};});
+  const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};if(k==="material"&&MATERIAL_DETAILS[v]){rows[i].manufacturer=MATERIAL_DETAILS[v].manufacturer;}return{...p,rows};});
   const esc = (s) => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const fmtDate = (iso) => { if(!iso) return ""; const p=iso.split("-"); return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:iso; };
   const highestClass = device.types.some(t=>DEVICE_TYPES.find(d=>d.key===t)?.class==="IIa")?"IIa":"I";
@@ -120,9 +260,11 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
 <div class="cards"><div class="card"><div class="card-title">From — Manufacturer</div><div class="card-row"><strong>${esc(mfr.name)}</strong></div><div class="card-row">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}, ${esc(mfr.country)}</div>${mfr.phone?`<div class="card-row">☎ ${esc(mfr.phone)}</div>`:""} ${mfr.prrcName?`<div style="margin-top:3px;border-top:1px solid #d0dbe8;padding-top:3px"><div style="font-size:6.5px;color:#7a8fa5">Person Responsible for Regulatory Compliance (Art. 15)</div><div style="font-size:8.5px;font-weight:700;color:#1a3a5c">${esc(mfr.prrcName)}</div>${mfr.prrcQual?`<div style="font-size:6.5px;color:#6a8aaa">${esc(mfr.prrcQual)}</div>`:""}</div>`:""}</div>
 <div class="card green"><div class="card-title">To — Clinic / Prescriber</div><div class="card-row"><strong>${esc(prescriber.name)}</strong></div><div class="card-row">BIG: <strong>${esc(prescriber.big)}</strong></div>${showPractice?`<div class="card-row">${esc(prescriber.practice)}</div>`:""} ${prescriber.address?`<div class="card-row">${esc(prescriber.address)}</div>`:""}<div class="card-row">Prescription: ${fmtDate(prescriber.prescDate)}</div></div></div>
 <div class="cards"><div class="card amber"><div class="card-title">Patient</div><div class="card-row">${esc(patient.method==="code"?"Patient Code":"Patient Name")}: <strong>${esc(patient.identifier)}</strong></div></div>
-<div class="card"><div class="card-title">Device</div><div class="card-row"><strong>${esc(deviceLabel)}</strong></div><div class="card-row">Region: ${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</div>${device.implantSystem?`<div class="card-row">Implant: ${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</div>`:""} ${device.sleeveType?`<div class="card-row">Sleeve: ${esc(device.sleeveType)}</div>`:""} ${device.fixationSleeve?`<div class="card-row">Fixation: ${esc(device.fixationSleeve)}</div>`:""} ${device.software?`<div class="card-row">Design: ${esc(device.software)}${device.designDate?` · ${fmtDate(device.designDate)}`:""}</div>`:""} ${device.notes?`<div class="card-row">Notes: ${esc(device.notes)}</div>`:""}</div></div>
+<div class="card"><div class="card-title">Device</div><div class="card-row"><strong>${esc(deviceLabel)}</strong></div><div class="card-row">Region: ${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</div>${device.implantSystem?`<div class="card-row">Implant: ${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</div>`:""} ${device.sleeveType?`<div class="card-row">Sleeve: ${esc(device.sleeveType)}</div>`:""} ${device.fixationSleeve?`<div class="card-row">Fixation: ${esc(device.fixationSleeve)}</div>`:""} ${device.fixationPinSystem?`<div class="card-row">Fixation Pin: ${esc(device.fixationPinSystem)}</div>`:""} ${device.software?`<div class="card-row">Design: ${esc(device.software)}${device.designDate?` · ${fmtDate(device.designDate)}`:""}</div>`:""} ${device.notes?`<div class="card-row">Notes: ${esc(device.notes)}</div>`:""}</div></div>
 <table class="mat-table"><thead><tr><th>Material</th><th>Manufacturer</th><th>Lot/Batch</th><th>CE</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td>${esc(r.batch||"Per mfr records")}</td><td>${r.ceMarked?"✓":"✗"}</td></tr>`).join("")}</tbody></table>
-${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">Printer: ${esc(materials.printer)}${materials.postProcess?` · Post-process: ${esc(materials.postProcess)}`:""}</div>`:""}
+${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">Printer: ${esc(materials.printer)}${materials.wash?` · Wash: ${esc(materials.wash)}`:""} ${materials.cure?` · Cure: ${esc(materials.cure)}`:""} ${materials.slicingSoftware?` · Software: ${esc(materials.slicingSoftware)}`:""}</div>`:""}
+${materials.processes.length?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:2px">Processes: ${materials.processes.map(p=>esc(p)).join(" · ")}</div>`:""}
+${materials.postProcessProtocol?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:2px;white-space:pre-line">Post-Processing Protocol:<br/>${esc(materials.postProcessProtocol).replace(/\n/g,"<br/>")}</div>`:""}
 <div class="declaration"><h3>MDR Statement — Annex XIII Section 1</h3><p>The undersigned declares that the custom-made device described herein:</p><p><strong>(a)</strong> is intended for the sole use of patient <strong>${esc(patient.identifier)}</strong>, as prescribed by <strong>${esc(prescriber.name)}</strong> (BIG: ${esc(prescriber.big)});</p><p><strong>(b)</strong> has specific design characteristics as specified in the prescription;</p><p><strong>(c)</strong> conforms to the general safety and performance requirements of Annex I that are applicable, and where not fully met, justification is documented;</p><p><strong>(d)</strong> the device has been manufactured in accordance with the prescription under appropriate quality management.</p>${sign.gsprExceptions?`<p><strong>GSPR Exceptions:</strong> ${esc(sign.gsprExceptions)}</p>`:""}</div>
 <div class="sig-section"><div class="title">Authorised Signature — Manufacturer</div><div class="sig-field"><label>Name (print)</label><div class="val">${esc(sign.signerName)}${sign.credentials?`, ${esc(sign.credentials)}`:""}</div></div><div class="sig-field"><label>Title / Function</label><div class="val">${esc(sign.signerTitle)}</div></div><div class="sig-field"><label>Date</label><div class="val">${fmtDate(sign.date)}</div></div></div>
 <div class="footer"><span>${esc(mfr.name)} · ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} · Generated ${new Date().toLocaleDateString()}</span></div></body></html>`;
@@ -137,7 +279,7 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
 <div class="ref-bar"><div>MDR Ref: <strong>${docRef}</strong>${device.labRef?` · Lab: <strong>${esc(device.labRef)}</strong>`:""}${prescriber.orderRef?` · Rx: <strong>${esc(prescriber.orderRef)}</strong>`:""}</div><div>Delivery Date: <strong>${fmtDate(sign.date)}</strong></div></div>
 <div class="cards"><div class="card"><div class="card-title">From — Manufacturer</div><div class="card-row"><strong>${esc(mfr.name)}</strong></div><div class="card-row">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}</div>${mfr.phone?`<div class="card-row">☎ ${esc(mfr.phone)}</div>`:""}</div>
 <div class="card"><div class="card-title">To — Clinic / Prescriber</div><div class="card-row"><strong>${esc(prescriber.name)}</strong></div>${showPractice?`<div class="card-row">${esc(prescriber.practice)}</div>`:""} ${prescriber.address?`<div class="card-row">${esc(prescriber.address)}</div>`:""} ${prescriber.phone?`<div class="card-row">☎ ${esc(prescriber.phone)}</div>`:""}</div></div>
-<div class="card" style="margin-bottom:6px"><div class="card-title">Device Details</div><table style="font-size:9px;line-height:1.6"><tr><td style="color:#4a6fa5;width:120px">Patient</td><td><strong>${esc(patient.identifier)}</strong></td></tr><tr><td style="color:#4a6fa5">Device</td><td><strong>${esc(deviceLabel)}</strong></td></tr><tr><td style="color:#4a6fa5">Teeth / Region</td><td>${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</td></tr>${device.implantSystem?`<tr><td style="color:#4a6fa5">Implant System</td><td>${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</td></tr>`:""} ${device.sleeveType?`<tr><td style="color:#4a6fa5">Guided Sleeve</td><td>${esc(device.sleeveType)}</td></tr>`:""} ${device.fixationSleeve?`<tr><td style="color:#4a6fa5">Fixation Sleeve</td><td>${esc(device.fixationSleeve)}</td></tr>`:""} ${device.software?`<tr><td style="color:#4a6fa5">Design Software</td><td>${esc(device.software)}</td></tr>`:""} ${device.shade?`<tr><td style="color:#4a6fa5">Shade</td><td>${esc(device.shade)}</td></tr>`:""}</table></div>
+<div class="card" style="margin-bottom:6px"><div class="card-title">Device Details</div><table style="font-size:9px;line-height:1.6"><tr><td style="color:#4a6fa5;width:120px">Patient</td><td><strong>${esc(patient.identifier)}</strong></td></tr><tr><td style="color:#4a6fa5">Device</td><td><strong>${esc(deviceLabel)}</strong></td></tr><tr><td style="color:#4a6fa5">Teeth / Region</td><td>${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</td></tr>${device.implantSystem?`<tr><td style="color:#4a6fa5">Implant System</td><td>${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</td></tr>`:""} ${device.sleeveType?`<tr><td style="color:#4a6fa5">Guided Sleeve</td><td>${esc(device.sleeveType)}</td></tr>`:""} ${device.fixationSleeve?`<tr><td style="color:#4a6fa5">Fixation Sleeve</td><td>${esc(device.fixationSleeve)}</td></tr>`:""} ${device.fixationPinSystem?`<tr><td style="color:#4a6fa5">Fixation Pin System</td><td>${esc(device.fixationPinSystem)}</td></tr>`:""} ${device.software?`<tr><td style="color:#4a6fa5">Design Software</td><td>${esc(device.software)}</td></tr>`:""} ${device.shade?`<tr><td style="color:#4a6fa5">Shade</td><td>${esc(device.shade)}</td></tr>`:""}</table></div>
 <table class="mat-table"><thead><tr><th>Material</th><th>Manufacturer</th><th>Lot/Batch</th><th>CE</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td>${esc(r.batch||"Per mfr records")}</td><td>${r.ceMarked?"✓":"✗"}</td></tr>`).join("")}</tbody></table>
 <div class="handling"><h3>⚠ Important — Handling & Storage Instructions</h3><div style="font-size:9px;line-height:1.6"><div>🚫 <strong>Single use only.</strong> Do not reuse, resterilise, or modify.</div><div>✅ <strong>Before use:</strong> Disinfect or sterilise per the resin manufacturer's IFU and clinic protocol.</div><div>📦 <strong>Storage:</strong> Keep in protective packaging, avoid direct sunlight and heat.</div><div>⏱ <strong>Shelf life:</strong> Use within 6 months of manufacturing date.</div></div></div>
 <div class="qc-box"><h3>✅ Quality Control — Release for Clinical Use</h3><div style="font-size:9px">This device has been manufactured in accordance with the prescription, inspected for dimensional accuracy and surface quality, and is released for clinical use.</div><div class="qc-row"><div class="qc-field"><label>Inspected by</label><div class="val">${esc(sign.signerName)}${sign.credentials?`, ${esc(sign.credentials)}`:""}</div></div><div class="qc-field"><label>Date</label><div class="val">${fmtDate(sign.date)}</div></div><div class="qc-field"><label>Signature</label><div class="val" style="border-bottom-style:dashed;min-height:22px"></div></div></div></div>
@@ -226,33 +368,69 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
               </select>
             </div>}
             {device.implantSystem&&<div className="mt-3">
-              <label className="block text-xs font-semibold text-blue-700 mb-2">Fixation Pin Sleeve</label>
-              <select value={device.fixationSleeve} onChange={e=>setDevice(p=>({...p,fixationSleeve:e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
+              <label className="block text-xs font-semibold text-blue-700 mb-2">Fixation Pin System</label>
+              <select value={device.fixationPinSystem} onChange={e=>setDevice(p=>({...p,fixationPinSystem:e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">— None / Not applicable —</option>
-                <option value="Fixation Pin Sleeve 1.5mm">Fixation Pin Sleeve 1.5mm</option>
-                <option value="Fixation Pin Sleeve 1.2mm">Fixation Pin Sleeve 1.2mm</option>
-                <option value="Custom (specify in notes)">Custom (specify in notes)</option>
+                {FIXATION_PIN_SYSTEMS.map(s=><option key={s} value={s}>{s}</option>)}
               </select>
             </div>}
           </div>}
 
-          <div className="grid grid-cols-2 gap-4"><FormInput label="Design Software" value={device.software} onChange={up(setDevice,"software")} placeholder="e.g. coDiagnostiX"/><FormInput label="Design Date" type="date" value={device.designDate} onChange={up(setDevice,"designDate")}/><FormInput label="Lab Reference" value={device.labRef} onChange={up(setDevice,"labRef")}/><FormInput label="Shade" value={device.shade} onChange={up(setDevice,"shade")}/><FormInput label="Clinical Notes" value={device.notes} onChange={up(setDevice,"notes")} span={2}/></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2"><label className="block text-xs font-semibold text-gray-500 mb-1">Design Software</label>
+              <select value={device.software} onChange={e=>setDevice(p=>({...p,software:e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">— Select design software —</option>
+                {DESIGN_SOFTWARE.map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <FormInput label="Design Date" type="date" value={device.designDate} onChange={up(setDevice,"designDate")}/><FormInput label="Lab Reference" value={device.labRef} onChange={up(setDevice,"labRef")}/><FormInput label="Shade" value={device.shade} onChange={up(setDevice,"shade")}/><FormInput label="Clinical Notes" value={device.notes} onChange={up(setDevice,"notes")} span={2}/></div>
         </div>}
 
         {step===3&&<div>
-          <h2 className="text-lg font-bold text-gray-800 mb-1">Materials & Processing</h2><p className="text-sm text-gray-500 mb-5">Specify all materials used.</p>
+          <h2 className="text-lg font-bold text-gray-800 mb-1">Materials & Processing</h2><p className="text-sm text-gray-500 mb-5">Specify all materials, equipment, and protocols.</p>
           {materials.rows.map((r,i)=><div key={i} className="grid grid-cols-4 gap-3 mb-3">
             <div className="col-span-2"><label className="block text-xs font-semibold text-gray-500 mb-1">Material {i+1}</label>
               <select value={r.material} onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">Select...</option>{MAT_OPTIONS.map(m=><option key={m} value={m}>{m}</option>)}<option value="_custom">— Custom —</option></select>
               {r.material==="_custom"&&<input placeholder="Enter material" onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm mt-1 outline-none focus:ring-2 focus:ring-blue-500"/>}</div>
             <FormInput label="Manufacturer" value={r.manufacturer} onChange={e=>upMat(i,"manufacturer",e.target.value)}/><FormInput label="Lot/Batch" value={r.batch} onChange={e=>upMat(i,"batch",e.target.value)}/></div>)}
           <button onClick={addMatRow} className="text-sm text-blue-600 font-medium hover:underline mb-5">+ Add material row</button>
-          <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4"><FormInput label="3D Printer" value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} placeholder="e.g. Formlabs Form 3B"/><FormInput label="Post-Processing" value={materials.postProcess} onChange={e=>setMaterials(p=>({...p,postProcess:e.target.value}))} placeholder="e.g. IPA wash, UV cure"/></div>
+
+          {/* MANUFACTURING PROCESSES */}
+          <div className="border-t border-gray-100 pt-4 mb-4">
+            <label className="block text-xs font-semibold text-gray-500 mb-2">Manufacturing Processes</label>
+            <div className="flex flex-wrap gap-2">{MFG_PROCESSES.map(proc=>
+              <button key={proc} onClick={()=>setMaterials(p=>({...p,processes:p.processes.includes(proc)?p.processes.filter(x=>x!==proc):[...p.processes,proc]}))} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${materials.processes.includes(proc)?"bg-green-100 border-green-400 text-green-800 border":"border border-gray-200 text-gray-500 hover:bg-gray-50"}`}>{materials.processes.includes(proc)?"✓ ":""}{proc}</button>
+            )}</div>
+          </div>
+
+          {/* EQUIPMENT */}
+          <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-4">
+            <label className="block text-xs font-semibold text-blue-700 mb-3">Equipment</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="block text-xs font-semibold text-gray-500 mb-1">Printer</label>
+                <select value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="">— Select printer —</option>
+                  {PRINTERS.map(s=><option key={s} value={s}>{s}</option>)}
+                </select></div>
+              <div><label className="block text-xs font-semibold text-gray-500 mb-1">Wash Machine</label>
+                <input value={materials.wash} onChange={e=>setMaterials(p=>({...p,wash:e.target.value}))} placeholder="e.g. SprintRay ProWash S" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
+              <div><label className="block text-xs font-semibold text-gray-500 mb-1">Cure Machine</label>
+                <input value={materials.cure} onChange={e=>setMaterials(p=>({...p,cure:e.target.value}))} placeholder="e.g. SprintRay ProCure 2" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
+              <div><label className="block text-xs font-semibold text-gray-500 mb-1">Slicing Software</label>
+                <input value={materials.slicingSoftware} onChange={e=>setMaterials(p=>({...p,slicingSoftware:e.target.value}))} placeholder="e.g. RayWare" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
+            </div>
+          </div>
+
+          {/* POST-PROCESSING PROTOCOL */}
+          <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+            <label className="block text-xs font-semibold text-amber-700 mb-2">Post-Processing Protocol</label>
+            <textarea value={materials.postProcessProtocol} onChange={e=>setMaterials(p=>({...p,postProcessProtocol:e.target.value}))} rows={6} placeholder="Step-by-step post-processing protocol..." className="w-full px-3 py-2 rounded-lg border border-amber-200 text-sm outline-none focus:ring-2 focus:ring-amber-400 resize-y font-mono"/>
+          </div>
         </div>}
 
         {step===4&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Review & Sign</h2><p className="text-sm text-gray-500 mb-5">Verify details, then download.</p>
-          <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",device.teeth.filter(t=>t.length===2).sort().join(", ")||"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass],...(device.implantSystem?[["Implant System",device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem]]:[]),(device.sleeveType?[["Sleeve",device.sleeveType]]:[]),(device.fixationSleeve?[["Fixation Sleeve",device.fixationSleeve]]:[])].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
+          <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",device.teeth.filter(t=>t.length===2).sort().join(", ")||"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass],...(device.implantSystem?[["Implant System",device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem]]:[]),(device.sleeveType?[["Sleeve",device.sleeveType]]:[]),(device.fixationSleeve?[["Fixation Sleeve",device.fixationSleeve]]:[]),(device.fixationPinSystem?[["Fixation Pin System",device.fixationPinSystem]]:[])].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
           <div className="border-t border-gray-100 pt-5"><h3 className="text-sm font-semibold text-gray-700 mb-3">Signature</h3>
             <div className="grid grid-cols-3 gap-4"><FormInput label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><FormInput label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><FormInput label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
             <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Appears after name on documents.</p></div></div>
