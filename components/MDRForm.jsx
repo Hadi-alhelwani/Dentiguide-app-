@@ -80,10 +80,11 @@ const DEVICE_WARNINGS = {
     "The manufacturer does not perform clinical assessment, surgical decision-making, or intra-operative adjustments.",
   ],
   crown_3d: [
-    "Custom-made restorative device. Not intended for mass production or serial manufacture.",
-    "Verify occlusion, marginal fit, and shade match before final cementation.",
-    "For temporary / semi-permanent use only unless material is indicated for definitive restoration per manufacturer's IFU.",
-    "The prescribing clinician is responsible for assessing clinical suitability, tooth preparation adequacy, and final placement.",
+    "Verify marginal fit, proximal contacts, and occlusion before definitive cementation.",
+    "Not indicated for patients with severe bruxism unless a protective nightguard is provided.",
+    "3D-printed resin crowns are intended as long-term provisional or semi-permanent restorations; clinical longevity depends on occlusal load, oral hygiene, and periodic review.",
+    "The manufacturer does not perform clinical assessment, surgical decision-making, or intra-oral adjustments.",
+    "Periodic clinical and radiographic follow-up is recommended per the prescriber\u2019s protocol.",
   ],
   bridge_3d: [
     "Custom-made restorative device. Not intended for mass production or serial manufacture.",
@@ -524,32 +525,160 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
 
   const generateMDR = () => {
     const matRows = materials.rows.filter(r=>r.material);
-    const retention = highestClass==="I"?"10 years":"15 years (implantable)";
+    // Implantable devices: titanium_bar, ti_denture → 15 years. Everything else → 10 years.
+    const isImplantable = device.types.some(t=>["titanium_bar","ti_denture"].includes(t));
+    const retention = isImplantable ? "15 years (implantable custom device)" : "10 years (non-implantable custom device)";
     const showPractice = prescriber.practice && prescriber.practice.trim().toLowerCase()!==prescriber.name.trim().toLowerCase();
     const isRestorative = device.types.some(t=>["crown_3d","bridge_3d","crown_zirconia","bridge_zirconia","crown_pmma","bridge_pmma"].includes(t));
     // Collect device-specific warnings (deduplicated)
     const warningSet = new Set();
     device.types.forEach(t => { (DEVICE_WARNINGS[t]||DEVICE_WARNINGS.surgical_guide_3d).forEach(w => warningSet.add(w)); });
     const warnings = [...warningSet];
+    // Material indication based on device type
+    const matIndication = (() => {
+      if (device.types.some(t=>["crown_3d","bridge_3d","crown_zirconia","bridge_zirconia"].includes(t))) return "Crowns &amp; Fixed Prosthetics";
+      if (device.types.some(t=>["crown_pmma","bridge_pmma"].includes(t))) return "Temporary Restorations";
+      if (device.types.some(t=>["titanium_bar","ti_denture"].includes(t))) return "Implant-Supported Frameworks";
+      return "Surgical Guides";
+    })();
     return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>EU MDR Annex XIII — ${docRef}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:9px;color:#1a2a3a;line-height:1.4}@page{size:A4;margin:7mm 12mm}@media print{body{font-size:8.5px;color:#000!important}.no-print{display:none!important}.declaration,.warn-box,.biocompat-box{page-break-inside:avoid}}.header{background:#1a3a5c;color:#fff;padding:8px 14px 7px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}.header h1{font-size:12.5px;font-weight:700;letter-spacing:-0.01em}.header p{font-size:7.5px;opacity:0.85;margin-top:1px}.logo-area{display:flex;align-items:center;gap:8px}.logo-area svg{flex-shrink:0}.tag{display:inline-block;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);padding:1.5px 8px;border-radius:3px;font-size:7px;margin-left:3px;font-weight:600}.doc-ref-bar{display:flex;justify-content:space-between;padding:4px 10px;border:1.5px solid #1a3a5c;border-radius:4px;margin-bottom:5px;font-size:7.5px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px}.card{border:1px solid #c0cdd8;border-radius:5px;padding:7px 10px;border-left:3px solid #2a6fdb}.card.green{border-left-color:#1a7a3a}.card.amber{border-left-color:#c47a0a}.card-title{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a7a;margin-bottom:4px}.card-row{font-size:8px;line-height:1.45;color:#2a3a4a;margin-bottom:1px}.mat-table{width:100%;border-collapse:collapse;margin:5px 0}.mat-table th{text-align:left;padding:3px 6px;font-size:7px;font-weight:700;color:#3a5a7a;border-bottom:1.5px solid #1a3a5c}.mat-table td{padding:3px 6px;font-size:8px;border-bottom:1px solid #d0dbe8}.section-box{border:1px solid #c0cdd8;border-radius:5px;padding:8px 12px;margin:5px 0}.section-title{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#3a5a7a;margin-bottom:4px}.declaration{border:2px solid #1a3a5c;border-radius:6px;padding:10px 14px;margin:6px 0;page-break-inside:avoid}.declaration h3{font-size:10px;font-weight:700;color:#1a3a5c;margin-bottom:6px}.declaration p{font-size:8px;line-height:1.55;margin-bottom:3px}.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:5px 0}.sig-grid .section-box{margin:0}.sig-label{font-size:7px;color:#5a7a9a;display:block;margin-bottom:1px}.sig-val{font-size:8.5px;font-weight:600;color:#1a2a3a}.footer-info{border-radius:4px;padding:5px 10px;margin-top:5px;font-size:7px;color:#3a5a6a;border:1px solid #c0cdd8}.footer-line{border-top:1px solid #d0dbe8;margin-top:3px;padding-top:2px;font-size:6.5px;color:#7a8a9a;display:flex;justify-content:space-between}.footer-note{font-size:6.5px;color:#8a9aaa;text-align:center;margin-top:2px}</style></head><body>
-<div class="header"><div class="logo-area"><svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="16" fill="#ffffff" fill-opacity="0.15"/><path d="M50 15C38 15 28 25 28 40C28 58 50 85 50 85C50 85 72 58 72 40C72 25 62 15 50 15Z" fill="#ffffff" fill-opacity="0.9"/><circle cx="50" cy="38" r="10" fill="#1a3a5c"/></svg><div><h1>EU MDR 2017/745 — Annex XIII</h1><p>Custom-Made Dental Device Statement</p></div></div><div style="text-align:right"><div style="font-size:10px;font-weight:700;margin-bottom:2px">${esc(mfr.name)}</div><span class="tag">Custom-made device</span><span class="tag">EU MDR 2017/745</span><span class="tag">Annex XIII</span></div></div>
-<div class="doc-ref-bar"><div>Ref: <strong>${docRef}</strong>${device.labRef?` &middot; Lab: <strong>${esc(device.labRef)}</strong>`:""}${prescriber.orderRef?` &middot; Rx: <strong>${esc(prescriber.orderRef)}</strong>`:""} &middot; Date: <strong>${fmtDate(sign.date)}</strong></div><div style="font-weight:600">Indicative: Class ${highestClass} &middot; Form v1.0</div></div>
-<div class="cards"><div class="card"><div class="card-title">Manufacturer (Annex XIII §1)</div><div class="card-row"><strong>${esc(mfr.name)}</strong></div><div class="card-row">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}, ${esc(mfr.country)}</div>${mfr.phone?`<div class="card-row">☎ ${esc(mfr.phone)}</div>`:""} ${mfr.prrcName?`<div style="margin-top:3px;border-top:1px solid #d0dbe8;padding-top:3px"><div style="font-size:7px;color:#5a7a9a">Person Responsible for Regulatory Compliance (Art. 15)</div><div style="font-size:8.5px;font-weight:700;color:#1a3a5c">${esc(mfr.prrcName)}</div>${mfr.prrcQual?`<div style="font-size:7px;color:#5a7a9a;font-style:italic">${esc(mfr.prrcQual)}</div>`:""}</div>`:""}</div>
-<div class="card green"><div class="card-title">Prescribing Health Professional</div><div class="card-row"><strong>${esc(prescriber.name)}</strong></div><div class="card-row">BIG Register: <strong>${esc(prescriber.big)}</strong></div>${showPractice?`<div class="card-row">${esc(prescriber.practice)}</div>`:""} ${prescriber.address?`<div class="card-row">${esc(prescriber.address)}</div>`:""} ${prescriber.phone?`<div class="card-row">☎ ${esc(prescriber.phone)}</div>`:""}<div class="card-row">Prescription: ${fmtDate(prescriber.prescDate)}</div></div></div>
-<div class="cards"><div class="card amber"><div class="card-title">Patient Identification</div><div class="card-row">${esc(patient.method==="code"?"Patient Code":"Initials")}: <strong>${esc(patient.identifier)}</strong></div></div>
-<div class="card"><div class="card-title">Device Description</div><div class="card-row"><strong>${esc(deviceLabel)}</strong> &rarr; <em>Indicative: Class ${highestClass} (Rule ${highestClass==="I"?"5":"8"} — custom-made device)</em></div><div class="card-row">Teeth/Region: <strong>${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</strong></div>${device.implantSystem?`<div class="card-row">Implant System: ${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</div>`:""} ${device.sleeveType?`<div class="card-row">Sleeve System: ${esc(device.sleeveType)}</div>`:""} ${device.fixationSleeve?`<div class="card-row">Fixation Sleeve: ${esc(device.fixationSleeve)}</div>`:""} ${device.fixationPinSystem?`<div class="card-row">Fixation Pin System: ${esc(device.fixationPinSystem)}</div>`:""} ${isRestorative&&device.shade?`<div class="card-row">Shade: ${esc(device.shade)}</div>`:""} ${device.software?`<div class="card-row">Design: ${esc(device.software)}${device.designDate?` &middot; Completed: ${fmtDate(device.designDate)}`:""}</div>`:""} ${device.notes?`<div class="card-row" style="font-style:italic">Notes: ${esc(device.notes)}</div>`:""}</div></div>
-<div class="section-box"><div class="section-title">Materials &amp; Traceability (Annex XIII §2(a))</div><table class="mat-table"><thead><tr><th>Material</th><th>Manufacturer</th><th>Lot / Batch</th><th>CE</th><th>Expiry</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td>${esc(r.batch||"Available in manufacturer records")}</td><td>${r.ceMarked?"✓ CE":"✗"}</td><td>—</td></tr>`).join("")}</tbody></table></div>
-<div class="cards"><div class="section-box" style="margin:0"><div class="section-title">Manufacturing Processes</div><div style="font-size:7.5px;line-height:1.6">${materials.processes.map(p=>`✓ ${esc(p)}`).join("<br/>")}</div></div>
-<div class="section-box" style="margin:0"><div class="section-title">Equipment</div><div style="font-size:7.5px;line-height:1.6">${materials.printer?`<strong>Printer:</strong> ${esc(materials.printer)}<br/>`:""} ${materials.wash?`<strong>Wash:</strong> ${esc(materials.wash)}<br/>`:""} ${materials.cure?`<strong>Cure:</strong> ${esc(materials.cure)}<br/>`:""} ${materials.slicingSoftware?`<strong>Software:</strong> ${esc(materials.slicingSoftware)}`:""}</div></div></div>
-${materials.postProcessProtocol?`<div class="section-box"><div class="section-title">Post-Processing Protocol</div><div style="font-size:7.5px;line-height:1.6;white-space:pre-line">${esc(materials.postProcessProtocol).replace(/\n/g,"<br/>")}</div></div>`:""}
-<div class="section-box biocompat-box"><div class="section-title">Biocompatibility Confirmation (Annex I GSPR)</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:7.5px;line-height:1.5"><div>☑ CE-marked biocompatible materials used for intended purpose</div><div>☑ ISO 10993 biological safety covered by material manufacturer</div><div>☑ Manufacturer IFU followed</div><div>☑ No known allergens / hazards</div></div></div>
-<div class="section-box warn-box"><div class="section-title">Warnings &amp; Limitations</div><div style="font-size:7.5px;line-height:1.6">${warnings.map(w=>`<div>● ${esc(w)}</div>`).join("")}</div><div style="font-size:7px;color:#5a7a9a;text-align:right;margin-top:3px;font-style:italic">Case data consistency verified prior to manufacturing.</div></div>
-<div class="declaration"><h3>Manufacturer's Declaration — EU MDR 2017/745 Annex XIII §1</h3><p>The undersigned declares that the custom-made device described herein:</p><p><strong>1.</strong> Is specifically made following a written prescription by a duly qualified medical practitioner, per Article 2(3) of EU MDR 2017/745;</p><p><strong>2.</strong> Is intended for the sole use of patient: <strong>${esc(patient.identifier)}</strong>;</p><p><strong>3.</strong> Conforms to the General Safety and Performance Requirements (GSPR) set out in Annex I;</p><p><strong>4.</strong> Has been manufactured in accordance with a documented Quality Management System (Article 10(9));</p><p><strong>5.</strong> Uses CE-marked materials and components per their intended purpose and manufacturer's IFU;</p><p><strong>6.</strong> Does not bear a CE marking (per Article 20(1) for custom-made devices);</p><p><strong>7.</strong> Is labelled as &ldquo;custom-made device&rdquo; / &ldquo;Sonderanfertigung&rdquo;;</p><p><strong>8.</strong> Is exempt from UDI requirements per Article 27(1) as a custom-made device.</p>${sign.gsprExceptions?`<p style="margin-top:4px"><strong>GSPR Exceptions:</strong> ${esc(sign.gsprExceptions)}</p>`:""}</div>
-<div class="sig-grid"><div class="section-box"><div class="section-title">Substances / Tissues (Annex XIII §1(c))</div><div style="font-size:7.5px;line-height:1.7"><div>☐ Medicinal substance &nbsp;&nbsp;&nbsp; ☐ Human blood / plasma</div><div>☐ Human tissue / cells &nbsp;&nbsp;&nbsp; ☐ Animal tissue / cells</div><div>☑ None of the above</div></div></div><div class="section-box"><div class="section-title">Authorised Signatory</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px"><div><div class="sig-label">NAME (PRINT)</div><div class="sig-val">${esc(sign.signerName)}${sign.credentials?`<br/><span style="font-size:7px;font-weight:400;color:#5a7a9a">${esc(sign.credentials)}</span>`:""}</div></div><div><div class="sig-label">TITLE / FUNCTION</div><div class="sig-val">${esc(sign.signerTitle)}</div></div><div><div class="sig-label">DATE</div><div class="sig-val">${fmtDate(sign.date)}</div></div><div><div class="sig-label">SIGNATURE</div><div style="border-bottom:1.5px dashed #666;min-height:20px;margin-top:2px"></div></div></div></div></div>
-<div class="footer-info">📋 <strong>Retention:</strong> ${retention} after placing on market (Annex XIII §4). Report incidents to <strong>BfArM:</strong> medizinprodukte@bfarm.de &middot; ℹ Exempt from UDI (Art. 27(1)) &amp; CE marking (Art. 20(1)) as custom-made device.</div>
-<div class="footer-line"><span>${esc(mfr.name)} &middot; ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} &middot; EU MDR 2017/745 &middot; Form v1.0</span></div>
-<div class="footer-note">Controlled document — changes require version update &middot; Terminology: &ldquo;Custom-made device&rdquo; as defined in Article 2(3), Regulation (EU) 2017/745.</div></body></html>`;
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:8.5px;color:#1e2a3a;line-height:1.35}
+@page{size:A4;margin:7mm 12mm 6mm 12mm}
+@media print{body{font-size:8px;color:#000!important}.no-print{display:none!important}.page-break-avoid{page-break-inside:avoid}}
+.header{background:#1e2a3a;color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.logo-box{width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0}
+.logo-box svg{width:28px;height:28px}
+.header-left{display:flex;align-items:center}
+.header h1{font-size:13px;font-weight:700;letter-spacing:-0.01em}
+.header .sub{font-size:7.5px;opacity:0.8;margin-top:1px}
+.header-right{text-align:right}
+.header-right .company{font-size:11px;font-weight:700;margin-bottom:3px}
+.badge{display:inline-block;border:1px solid rgba(255,255,255,0.35);padding:1.5px 8px;border-radius:10px;font-size:6.5px;font-weight:600;margin-left:3px;letter-spacing:0.02em}
+.ref-bar{display:flex;justify-content:space-between;padding:4px 0;font-size:7.5px;margin:4px 0 3px}
+.box{border:0.5px solid #c0c5ca;margin-bottom:3px;padding:6px 8px}
+.box-title{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#3a5a7a;margin-bottom:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.two-col .box{margin-bottom:0}
+.two-col .box:first-child{border-right:none}
+.row{font-size:8px;line-height:1.4;color:#2a3a4a;margin-bottom:0.5px}
+.row strong{color:#1e2a3a}
+.prrc-block{margin-top:3px;border-top:0.5px solid #c0c5ca;padding-top:3px}
+.prrc-title{font-size:6.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#3a5a7a}
+.prrc-name{font-size:9px;font-weight:700;color:#1e2a3a}
+.prrc-qual{font-size:7px;color:#5a7a9a;font-style:italic}
+.prrc-cred{font-size:7.5px;color:#1e2a3a}
+.mat-table{width:100%;border-collapse:collapse;margin:3px 0 2px}
+.mat-table th{text-align:left;padding:2.5px 5px;font-size:7px;font-weight:700;color:#3a5a7a;background:#f0f2f5;border:0.5px solid #c0c5ca}
+.mat-table td{padding:2.5px 5px;font-size:7.5px;border:0.25px solid #c0c5ca}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.three-col .col{border:0.5px solid #c0c5ca;padding:5px 7px;background:#f7f9fc;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.three-col .col:not(:first-child){border-left:0.5px solid #c0c5ca}
+.col-title{font-size:7px;font-weight:700;text-transform:uppercase;color:#3a5a7a;margin-bottom:3px}
+.col-row{font-size:7.5px;line-height:1.5}
+.bio-box{background:#f0f2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;font-size:7.5px}
+.warn-item{font-size:7.5px;line-height:1.45;margin-bottom:2px;padding-left:2px}
+.decl-title{font-size:9.5px;font-weight:700;color:#1e2a3a;margin-bottom:3px}
+.decl-item{font-size:7.5px;line-height:1.4;margin-bottom:0.5px;padding-left:4px}
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.sig-grid .box{margin-bottom:0}
+.sig-grid .box:first-child{border-right:none}
+.sig-table{width:100%}
+.sig-table td{vertical-align:top;padding:1px 0}
+.sig-label{font-size:6.5px;font-weight:700;text-transform:uppercase;color:#3a5a7a}
+.sig-val{font-size:8px;font-weight:600;color:#1e2a3a}
+.footer-box{border:0.5px solid #c0c5ca;padding:4px 8px;font-size:6.5px;color:#3a5a6a;margin-top:3px}
+.footer-line{border-top:0.5px solid #d0dbe8;margin-top:4px;padding-top:3px;font-size:6px;color:#7a8a9a;display:flex;justify-content:space-between}
+.footer-note{font-size:5.5px;color:#8a9aaa;text-align:center;margin-top:2px}
+.chk{font-weight:600}
+</style></head><body>
+<div class="header">
+<div class="header-left">
+<div class="logo-box"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 12C36 12 25 23 25 38C25 58 50 88 50 88C50 88 75 58 75 38C75 23 64 12 50 12Z" fill="#1e8a6e"/><circle cx="50" cy="36" r="11" fill="#fff"/><path d="M50 28C46 28 42 32 42 36C42 40 46 44 50 44C54 44 58 40 58 36C58 32 54 28 50 28Z" fill="#1e8a6e"/></svg></div>
+<div><h1>EU MDR 2017/745 — Annex XIII</h1><div class="sub">Custom-Made Dental Device Statement</div></div>
+</div>
+<div class="header-right">
+<div class="company">${esc(mfr.name)}</div>
+<span class="badge">Custom-made device</span><span class="badge">EU MDR 2017/745</span><span class="badge">Annex XIII</span>
+</div>
+</div>
+
+<div class="ref-bar"><div>Ref: <strong style="color:#1e5a9a">${docRef}</strong>${device.labRef?` &middot; Lab: <strong>${esc(device.labRef)}</strong>`:""}${prescriber.orderRef?` &middot; Rx: <strong>${esc(prescriber.orderRef)}</strong>`:""} &middot; Date: <strong>${fmtDate(sign.date)}</strong></div><div>Form v1.1</div></div>
+
+<div class="two-col">
+<div class="box"><div class="box-title">Manufacturer (Annex XIII §1)</div>
+<div class="row"><strong>${esc(mfr.name)}</strong></div>
+<div class="row">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}, ${esc(mfr.country)}</div>
+${mfr.prrcName?`<div class="prrc-block"><div class="prrc-title">Person Responsible for Regulatory Compliance (Art. 15)</div><div class="prrc-name">${esc(mfr.prrcName)}</div><div class="prrc-qual">Designated PRRC for ${esc(mfr.name)} under EU MDR 2017/745</div>${mfr.prrcQual?`<div class="prrc-cred">${esc(mfr.prrcQual)}</div>`:""}</div>`:""}</div>
+<div class="box"><div class="box-title">Prescribing Health Professional</div>
+<div class="row"><strong>${esc(prescriber.name)}</strong></div>
+<div class="row">BIG Register: <strong>${esc(prescriber.big)}</strong></div>
+${showPractice?`<div class="row">${esc(prescriber.practice)}</div>`:""} 
+${prescriber.address?`<div class="row">${esc(prescriber.address)}</div>`:""} 
+<div class="row">Prescription: ${fmtDate(prescriber.prescDate)}</div></div>
+</div>
+
+<div class="two-col">
+<div class="box"><div class="box-title">Patient Identification</div>
+<div class="row">${esc(patient.method==="code"?"Patient Code":"Initials")}: <strong>${esc(patient.identifier)}</strong></div></div>
+<div class="box"><div class="box-title">Device Description</div>
+<div class="row"><strong>${esc(deviceLabel)}</strong> &rarr; <em>Indicative: Class ${highestClass}</em> (custom-made device)</div>
+<div class="row">Region: <strong>${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</strong></div>
+${device.implantSystem?`<div class="row">Implant: ${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</div>`:""} 
+${device.sleeveType?`<div class="row">Sleeve: ${esc(device.sleeveType)}</div>`:""} 
+${device.software?`<div class="row">Design: ${esc(device.software)}${device.designDate?` &middot; Completed: ${fmtDate(device.designDate)}`:""}</div>`:""}</div>
+</div>
+
+<div class="box"><div class="box-title">Materials &amp; Traceability (Annex XIII §2(a))</div>
+<table class="mat-table"><thead><tr><th style="width:36%">Material</th><th style="width:26%">Manufacturer</th><th style="width:18%">Lot / Batch</th><th style="width:8%">CE</th><th style="width:12%">Expiry</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td><em>${esc(r.batch||"Per mfr records")}</em></td><td style="text-align:center">${r.ceMarked?"✓":"✗"}</td><td style="text-align:center">—</td></tr>`).join("")}</tbody></table></div>
+
+<div class="three-col">
+<div class="col"><div class="col-title">Manufacturing Processes</div>${materials.processes.map(p=>`<div class="col-row">✓ ${esc(p)}</div>`).join("")}</div>
+<div class="col"><div class="col-title">Equipment</div>
+${materials.printer?`<div class="col-row"><strong>Printer:</strong> ${esc(materials.printer)}</div>`:""} 
+${materials.wash?`<div class="col-row"><strong>Wash:</strong> ${esc(materials.wash)}</div>`:""} 
+${materials.cure?`<div class="col-row"><strong>Cure:</strong> ${esc(materials.cure)}</div>`:""} 
+${materials.slicingSoftware?`<div class="col-row"><strong>Software:</strong> ${esc(materials.slicingSoftware)}</div>`:""}</div>
+<div class="col"><div class="col-title">Post-Processing Protocol</div>
+<div class="col-row" style="white-space:pre-line">${esc(materials.postProcessProtocol||"").replace(/\\n/g,"<br/>")}</div></div>
+</div>
+
+<div class="box bio-box page-break-avoid"><div class="box-title">Biocompatibility Confirmation (Annex I GSPR)</div>
+<div class="bio-grid"><div><span class="chk">[x]</span> CE-marked biocompatible materials used for intended purpose</div><div><span class="chk">[x]</span> ISO 10993 biological safety covered by material manufacturer</div><div><span class="chk">[x]</span> Manufacturer IFU followed</div><div><span class="chk">[x]</span> No known allergens / hazards</div></div></div>
+
+<div class="box page-break-avoid"><div class="box-title">Warnings &amp; Limitations</div>
+${warnings.map(w=>`<div class="warn-item">&bull; ${esc(w)}</div>`).join("")}
+<div style="font-size:6.5px;color:#5a7a9a;text-align:right;margin-top:3px;font-style:italic">Case data consistency verified prior to manufacturing.</div></div>
+
+<div class="box page-break-avoid"><div class="decl-title">Manufacturer's Declaration — EU MDR 2017/745 Annex XIII §1</div>
+<div class="row" style="margin-bottom:3px">The undersigned declares that the custom-made device described herein:</div>
+<div class="decl-item"><strong>1.</strong> Is specifically made following a written prescription by a duly qualified medical practitioner, per Article 2(3) of EU MDR 2017/745;</div>
+<div class="decl-item"><strong>2.</strong> Is intended for the sole use of patient: <strong>${esc(patient.identifier)}</strong>;</div>
+<div class="decl-item"><strong>3.</strong> Conforms to the General Safety and Performance Requirements (GSPR) set out in Annex I;</div>
+<div class="decl-item"><strong>4.</strong> Has been manufactured in accordance with a documented Quality Management System (Article 10(9));</div>
+<div class="decl-item"><strong>5.</strong> Uses CE-marked materials and components per their intended purpose and manufacturer's IFU;</div>
+<div class="decl-item"><strong>6.</strong> Does not bear a CE marking (per Article 20(1) for custom-made devices);</div>
+<div class="decl-item"><strong>7.</strong> Is labelled as &ldquo;custom-made device&rdquo; / &ldquo;Sonderanfertigung&rdquo;;</div>
+<div class="decl-item"><strong>8.</strong> Is exempt from UDI requirements per Article 27(1) as a custom-made device.</div></div>
+
+<div class="sig-grid">
+<div class="box"><div class="box-title">Substances / Tissues (Annex XIII §1(c))</div>
+<div style="font-size:7.5px;line-height:1.7">
+<div>[ ] Medicinal substance &nbsp;&nbsp;&nbsp;&nbsp; [ ] Human blood / plasma</div>
+<div>[ ] Human tissue / cells &nbsp;&nbsp;&nbsp;&nbsp; [ ] Animal tissue / cells</div>
+<div><span class="chk">[x] None of the above</span></div></div></div>
+<div class="box"><div class="box-title">Authorised Signatory</div>
+<table class="sig-table"><tr><td style="width:50%"><div class="sig-label">Name (Print)</div><div class="sig-val">${esc(sign.signerName)}</div></td><td><div class="sig-label">Title / Function</div><div class="sig-val">${esc(sign.signerTitle)}</div></td></tr>
+<tr><td><div class="sig-label">Date</div><div class="sig-val">${fmtDate(sign.date)}</div></td><td><div class="sig-label">Signature</div><div style="border-bottom:1.5px dotted #666;min-height:14px;margin-top:2px"></div></td></tr></table></div>
+</div>
+
+<div class="footer-box">
+<strong>Retention:</strong> ${retention} after placing on market (Annex XIII §4). Report incidents to <strong>BfArM:</strong> medizinprodukte@bfarm.de &middot; &#9632; Exempt from UDI (Art. 27(1)) &amp; CE marking (Art. 20(1)) as custom-made device.</div>
+<div class="footer-line"><span>${esc(mfr.name)} &middot; ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} &middot; EU MDR 2017/745 &middot; Form v1.1</span></div>
+<div class="footer-note">Controlled document — changes require version update &middot; Terminology: &ldquo;Custom-made device&rdquo; as defined in Article 2(3), Regulation (EU) 2017/745.</div>
+</body></html>`;
   };
 
   const generateDeliveryNote = () => {
@@ -577,7 +706,7 @@ ${materials.postProcessProtocol?`<div class="section-box"><div class="section-ti
     const btn = win.document.createElement("div");
     btn.className = "no-print";
     btn.innerHTML = `<div style="position:fixed;top:0;left:0;right:0;background:#1a3a5c;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;z-index:99999;font-family:system-ui">
-      <span style="font-size:13px;font-weight:700">📄 ${docRef}${suffix} — Use "Save as PDF" in the print dialog</span>
+      <span style="font-size:13px;font-weight:700">📄 ${docRef}${suffix} v1.1 — Use "Save as PDF" in the print dialog</span>
       <button onclick="window.print()" style="background:#fff;color:#1a3a5c;border:none;padding:8px 24px;border-radius:6px;font-weight:700;cursor:pointer;font-size:13px">🖨 Print / Save PDF</button>
     </div><div style="height:50px"></div>`;
     win.document.body.insertBefore(btn, win.document.body.firstChild);
@@ -592,7 +721,7 @@ ${materials.postProcessProtocol?`<div class="section-box"><div class="section-ti
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6"><div><h1 className="text-2xl font-bold text-gray-900">New MDR Form</h1><p className="text-gray-500 text-sm mt-1">EU MDR Annex XIII — {docRef}</p></div></div>
+      <div className="flex justify-between items-center mb-6"><div><h1 className="text-2xl font-bold text-gray-900">New MDR Form</h1><p className="text-gray-500 text-sm mt-1">EU MDR Annex XIII v1.1 — {docRef}</p></div></div>
       <div className="flex gap-1 mb-6">{STEPS.map((s,i)=><button key={s.key} onClick={()=>i<=step?setStep(i):null} className={`flex-1 py-2.5 text-center text-xs font-medium transition ${i===0?"rounded-l-lg":""} ${i===STEPS.length-1?"rounded-r-lg":""} ${i===step?"bg-blue-600 text-white font-bold":i<step?"bg-blue-400 text-white cursor-pointer":"bg-gray-200 text-gray-500"}`}><span className="block text-base">{s.icon}</span>{s.label}</button>)}</div>
       <div className="bg-white rounded-xl border border-gray-200 p-7 min-h-[400px]">
 
@@ -748,7 +877,7 @@ ${materials.postProcessProtocol?`<div class="section-box"><div class="section-ti
           <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",device.teeth.filter(t=>t.length===2).sort().join(", ")||"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass],...(device.implantSystem?[["Implant System",device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem]]:[]),(device.sleeveType?[["Sleeve",device.sleeveType]]:[]),(device.fixationSleeve?[["Fixation Sleeve",device.fixationSleeve]]:[]),(device.fixationPinSystem?[["Fixation Pin System",device.fixationPinSystem]]:[])].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
           <div className="border-t border-gray-100 pt-5"><h3 className="text-sm font-semibold text-gray-700 mb-3">Signature</h3>
             <div className="grid grid-cols-3 gap-4"><FormInput label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><FormInput label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><FormInput label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
-            <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Appears after name on documents.</p></div></div>
+            <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Shown on delivery notes. For MDR forms, qualifications appear in the PRRC section (Settings).</p></div></div>
           <div className="flex gap-3 mt-8">
             <button onClick={handleDownloadMDR} disabled={downloading||!sign.signerName} className="px-6 py-3 rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 transition shadow-sm">{downloading?"⏳ Generating...":"📄 Download MDR PDF"}</button>
             <button onClick={handleDownloadDelivery} disabled={!sign.signerName} className="px-6 py-3 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 disabled:opacity-40 transition shadow-sm">📦 Download Delivery PDF</button></div>
