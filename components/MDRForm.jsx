@@ -11,6 +11,45 @@ const DEVICE_TYPES = [
   { key: "model", label: "Diagnostic / Surgical Model", class: "I" },
 ];
 
+const TOOTH_POSITIONS = [
+  "18","17","16","15","14","13","12","11",
+  "21","22","23","24","25","26","27","28",
+  "48","47","46","45","44","43","42","41",
+  "31","32","33","34","35","36","37","38",
+];
+const UPPER_RIGHT = ["18","17","16","15","14","13","12","11"];
+const UPPER_LEFT = ["21","22","23","24","25","26","27","28"];
+const LOWER_RIGHT = ["48","47","46","45","44","43","42","41"];
+const LOWER_LEFT = ["31","32","33","34","35","36","37","38"];
+const ALL_UPPER = [...UPPER_RIGHT,...UPPER_LEFT];
+const ALL_LOWER = [...LOWER_RIGHT,...LOWER_LEFT];
+
+const IMPLANT_SYSTEMS = [
+  "Straumann (BLT / BLX / TLX)",
+  "Nobel Biocare (NobelActive / NobelParallel / NobelReplace)",
+  "Dentsply Sirona (Astra Tech / Xive / Ankylos)",
+  "Camlog / iSy",
+  "Neodent (Grand Morse / Helix)",
+  "Megagen (AnyRidge / AnyOne)",
+  "Osstem (TS / MS / SS)",
+  "BioHorizons (Tapered Internal)",
+  "Zimmer Biomet (T3 / TSV)",
+  "J Dental Care (JDentalCare)",
+  "Southern Implants",
+  "BTI",
+  "ICX-Templant (medentis medical)",
+  "Other (specify in notes)",
+];
+
+const SLEEVE_OPTIONS = {
+  "Straumann (BLT / BLX / TLX)": ["Straumann Guided Surgery Cassette","coDiagnostiX Fully Guided Sleeve — BLT","coDiagnostiX Fully Guided Sleeve — BLX","Pilot Drill Sleeve 2.2mm"],
+  "Nobel Biocare (NobelActive / NobelParallel / NobelReplace)": ["Nobel Guided Surgery Sleeve — NobelActive","Nobel Guided Surgery Sleeve — NobelParallel","NobelGuide Pilot Drill Sleeve","DTX Studio Implant Sleeve"],
+  "Neodent (Grand Morse / Helix)": ["Neodent Guided Surgery Kit Sleeve — GM","Neodent Guided Surgery Kit Sleeve — Helix","Pilot Drill Sleeve 2.0mm"],
+  "Megagen (AnyRidge / AnyOne)": ["Megagen R2GATE Sleeve — AnyRidge","Megagen R2GATE Sleeve — AnyOne","Pilot Drill Sleeve 2.0mm"],
+  "Camlog / iSy": ["Camlog Guide Sleeve","iSy Guided Sleeve","Pilot Drill Sleeve 2.0mm"],
+  "default": ["Pilot Drill Sleeve 2.0mm","Pilot Drill Sleeve 2.2mm","Fully Guided Sleeve (specify in notes)","Open Guide (no sleeve)"],
+};
+
 const MAT_OPTIONS = [
   "NextDent SG — Surgical Guide Resin (Class I Biocompatible, Translucent Orange)",
   "Formlabs Surgical Guide V1 Resin","BEGO VarseoWax Surgical Guide",
@@ -35,7 +74,7 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
   const mfr = { name:settings.company_name, street:settings.street, postal:settings.postal, city:settings.city, country:settings.country, phone:settings.phone, email:settings.email, prrcName:settings.prrc_name, prrcQual:settings.prrc_qual, site2Name:settings.site2_name, site2Address:settings.site2_address };
   const [prescriber, setPrescriber] = useState({ name:"",big:"",practice:"",address:"",phone:"",email:"",orderRef:"",prescDate:new Date().toISOString().split("T")[0] });
   const [patient, setPatient] = useState({ method:"code", identifier:"" });
-  const [device, setDevice] = useState({ types:[],teeth:[],shade:"A2",software:"",labRef:"",notes:"",designDate:"" });
+  const [device, setDevice] = useState({ types:[],teeth:[],shade:"A2",software:"",labRef:"",notes:"",designDate:"",implantSystem:"",implantDetails:"",sleeveType:"",fixationSleeve:"" });
   const [materials, setMaterials] = useState({ rows:[{material:"",manufacturer:"",batch:"",ceMarked:true}], printer:"",postProcess:"" });
   const [sign, setSign] = useState({ signerName:settings.signer_name||"", signerTitle:settings.signer_title||"Managing Director", credentials:settings.signer_credentials||"", date:new Date().toISOString().split("T")[0], gsprExceptions:"" });
   const [docRef] = useState(()=>{ const y=new Date().getFullYear(); const c=(settings.doc_counter||0)+1; return `CMD-${y}-${String(c).padStart(4,"0")}`; });
@@ -43,6 +82,22 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
 
   const selectClinic = (id) => { const c=clinics.find(x=>x.id===id); if(c) setPrescriber(p=>({...p,name:c.name,big:c.big,practice:c.practice,address:c.address,phone:c.phone,email:c.email})); };
   const toggleDevice = (key) => setDevice(p=>({...p,types:p.types.includes(key)?p.types.filter(t=>t!==key):[...p.types,key]}));
+  const toggleTooth = (t) => {
+    setDevice(p => {
+      const has = p.teeth.includes(t);
+      if (t === "Full Upper Arch") {
+        return { ...p, teeth: has ? p.teeth.filter(x => !ALL_UPPER.includes(x) && x !== t && x !== "Full Mouth") : [...new Set([...p.teeth, ...ALL_UPPER, t])] };
+      }
+      if (t === "Full Lower Arch") {
+        return { ...p, teeth: has ? p.teeth.filter(x => !ALL_LOWER.includes(x) && x !== t && x !== "Full Mouth") : [...new Set([...p.teeth, ...ALL_LOWER, t])] };
+      }
+      if (t === "Full Mouth") {
+        const allTeeth = [...ALL_UPPER, ...ALL_LOWER];
+        return { ...p, teeth: has ? [] : [...allTeeth, "Full Upper Arch", "Full Lower Arch", "Full Mouth"] };
+      }
+      return { ...p, teeth: has ? p.teeth.filter(x => x !== t && x !== "Full Upper Arch" && x !== "Full Lower Arch" && x !== "Full Mouth") : [...p.teeth, t] };
+    });
+  };
   const addMatRow = () => setMaterials(p=>({...p,rows:[...p.rows,{material:"",manufacturer:"",batch:"",ceMarked:true}]}));
   const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};return{...p,rows};});
   const esc = (s) => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -62,7 +117,7 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
 <div class="cards"><div class="card"><div class="card-title">From — Manufacturer</div><div class="card-row"><strong>${esc(mfr.name)}</strong></div><div class="card-row">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}, ${esc(mfr.country)}</div>${mfr.phone?`<div class="card-row">☎ ${esc(mfr.phone)}</div>`:""} ${mfr.prrcName?`<div style="margin-top:3px;border-top:1px solid #d0dbe8;padding-top:3px"><div style="font-size:6.5px;color:#7a8fa5">Person Responsible for Regulatory Compliance (Art. 15)</div><div style="font-size:8.5px;font-weight:700;color:#1a3a5c">${esc(mfr.prrcName)}</div>${mfr.prrcQual?`<div style="font-size:6.5px;color:#6a8aaa">${esc(mfr.prrcQual)}</div>`:""}</div>`:""}</div>
 <div class="card green"><div class="card-title">To — Clinic / Prescriber</div><div class="card-row"><strong>${esc(prescriber.name)}</strong></div><div class="card-row">BIG: <strong>${esc(prescriber.big)}</strong></div>${showPractice?`<div class="card-row">${esc(prescriber.practice)}</div>`:""} ${prescriber.address?`<div class="card-row">${esc(prescriber.address)}</div>`:""}<div class="card-row">Prescription: ${fmtDate(prescriber.prescDate)}</div></div></div>
 <div class="cards"><div class="card amber"><div class="card-title">Patient</div><div class="card-row">${esc(patient.method==="code"?"Patient Code":"Patient Name")}: <strong>${esc(patient.identifier)}</strong></div></div>
-<div class="card"><div class="card-title">Device</div><div class="card-row"><strong>${esc(deviceLabel)}</strong></div><div class="card-row">Region: ${esc((device.teeth||[]).join(", ")||"—")}</div>${device.software?`<div class="card-row">Design: ${esc(device.software)}${device.designDate?` · ${fmtDate(device.designDate)}`:""}</div>`:""} ${device.notes?`<div class="card-row">Notes: ${esc(device.notes)}</div>`:""}</div></div>
+<div class="card"><div class="card-title">Device</div><div class="card-row"><strong>${esc(deviceLabel)}</strong></div><div class="card-row">Region: ${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</div>${device.implantSystem?`<div class="card-row">Implant: ${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</div>`:""} ${device.sleeveType?`<div class="card-row">Sleeve: ${esc(device.sleeveType)}</div>`:""} ${device.fixationSleeve?`<div class="card-row">Fixation: ${esc(device.fixationSleeve)}</div>`:""} ${device.software?`<div class="card-row">Design: ${esc(device.software)}${device.designDate?` · ${fmtDate(device.designDate)}`:""}</div>`:""} ${device.notes?`<div class="card-row">Notes: ${esc(device.notes)}</div>`:""}</div></div>
 <table class="mat-table"><thead><tr><th>Material</th><th>Manufacturer</th><th>Lot/Batch</th><th>CE</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td>${esc(r.batch||"Per mfr records")}</td><td>${r.ceMarked?"✓":"✗"}</td></tr>`).join("")}</tbody></table>
 ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">Printer: ${esc(materials.printer)}${materials.postProcess?` · Post-process: ${esc(materials.postProcess)}`:""}</div>`:""}
 <div class="declaration"><h3>MDR Statement — Annex XIII Section 1</h3><p>The undersigned declares that the custom-made device described herein:</p><p><strong>(a)</strong> is intended for the sole use of patient <strong>${esc(patient.identifier)}</strong>, as prescribed by <strong>${esc(prescriber.name)}</strong> (BIG: ${esc(prescriber.big)});</p><p><strong>(b)</strong> has specific design characteristics as specified in the prescription;</p><p><strong>(c)</strong> conforms to the general safety and performance requirements of Annex I that are applicable, and where not fully met, justification is documented;</p><p><strong>(d)</strong> the device has been manufactured in accordance with the prescription under appropriate quality management.</p>${sign.gsprExceptions?`<p><strong>GSPR Exceptions:</strong> ${esc(sign.gsprExceptions)}</p>`:""}</div>
@@ -79,7 +134,7 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
 <div class="ref-bar"><div>MDR Ref: <strong>${docRef}</strong>${device.labRef?` · Lab: <strong>${esc(device.labRef)}</strong>`:""}${prescriber.orderRef?` · Rx: <strong>${esc(prescriber.orderRef)}</strong>`:""}</div><div>Delivery Date: <strong>${fmtDate(sign.date)}</strong></div></div>
 <div class="cards"><div class="card"><div class="card-title">From — Manufacturer</div><div class="card-row"><strong>${esc(mfr.name)}</strong></div><div class="card-row">${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)}</div>${mfr.phone?`<div class="card-row">☎ ${esc(mfr.phone)}</div>`:""}</div>
 <div class="card"><div class="card-title">To — Clinic / Prescriber</div><div class="card-row"><strong>${esc(prescriber.name)}</strong></div>${showPractice?`<div class="card-row">${esc(prescriber.practice)}</div>`:""} ${prescriber.address?`<div class="card-row">${esc(prescriber.address)}</div>`:""} ${prescriber.phone?`<div class="card-row">☎ ${esc(prescriber.phone)}</div>`:""}</div></div>
-<div class="card" style="margin-bottom:6px"><div class="card-title">Device Details</div><table style="font-size:9px;line-height:1.6"><tr><td style="color:#4a6fa5;width:120px">Patient</td><td><strong>${esc(patient.identifier)}</strong></td></tr><tr><td style="color:#4a6fa5">Device</td><td><strong>${esc(deviceLabel)}</strong></td></tr><tr><td style="color:#4a6fa5">Teeth / Region</td><td>${esc((device.teeth||[]).join(", ")||"—")}</td></tr>${device.software?`<tr><td style="color:#4a6fa5">Design Software</td><td>${esc(device.software)}</td></tr>`:""} ${device.shade?`<tr><td style="color:#4a6fa5">Shade</td><td>${esc(device.shade)}</td></tr>`:""}</table></div>
+<div class="card" style="margin-bottom:6px"><div class="card-title">Device Details</div><table style="font-size:9px;line-height:1.6"><tr><td style="color:#4a6fa5;width:120px">Patient</td><td><strong>${esc(patient.identifier)}</strong></td></tr><tr><td style="color:#4a6fa5">Device</td><td><strong>${esc(deviceLabel)}</strong></td></tr><tr><td style="color:#4a6fa5">Teeth / Region</td><td>${esc(device.teeth.filter(t=>t.length===2).sort().join(", ")||"—")}</td></tr>${device.implantSystem?`<tr><td style="color:#4a6fa5">Implant System</td><td>${esc(device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem)}</td></tr>`:""} ${device.sleeveType?`<tr><td style="color:#4a6fa5">Guided Sleeve</td><td>${esc(device.sleeveType)}</td></tr>`:""} ${device.fixationSleeve?`<tr><td style="color:#4a6fa5">Fixation Sleeve</td><td>${esc(device.fixationSleeve)}</td></tr>`:""} ${device.software?`<tr><td style="color:#4a6fa5">Design Software</td><td>${esc(device.software)}</td></tr>`:""} ${device.shade?`<tr><td style="color:#4a6fa5">Shade</td><td>${esc(device.shade)}</td></tr>`:""}</table></div>
 <table class="mat-table"><thead><tr><th>Material</th><th>Manufacturer</th><th>Lot/Batch</th><th>CE</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td>${esc(r.batch||"Per mfr records")}</td><td>${r.ceMarked?"✓":"✗"}</td></tr>`).join("")}</tbody></table>
 <div class="handling"><h3>⚠ Important — Handling & Storage Instructions</h3><div style="font-size:9px;line-height:1.6"><div>🚫 <strong>Single use only.</strong> Do not reuse, resterilise, or modify.</div><div>✅ <strong>Before use:</strong> Disinfect or sterilise per the resin manufacturer's IFU and clinic protocol.</div><div>📦 <strong>Storage:</strong> Keep in protective packaging, avoid direct sunlight and heat.</div><div>⏱ <strong>Shelf life:</strong> Use within 6 months of manufacturing date.</div></div></div>
 <div class="qc-box"><h3>✅ Quality Control — Release for Clinical Use</h3><div style="font-size:9px">This device has been manufactured in accordance with the prescription, inspected for dimensional accuracy and surface quality, and is released for clinical use.</div><div class="qc-row"><div class="qc-field"><label>Inspected by</label><div class="val">${esc(sign.signerName)}${sign.credentials?`, ${esc(sign.credentials)}`:""}</div></div><div class="qc-field"><label>Date</label><div class="val">${fmtDate(sign.date)}</div></div><div class="qc-field"><label>Signature</label><div class="val" style="border-bottom-style:dashed;min-height:22px"></div></div></div></div>
@@ -115,9 +170,70 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
         </div>}
 
         {step===2&&<div>
-          <h2 className="text-lg font-bold text-gray-800 mb-1">Device Details</h2><p className="text-sm text-gray-500 mb-5">Select device type(s) and tooth positions.</p>
+          <h2 className="text-lg font-bold text-gray-800 mb-1">Device Details</h2><p className="text-sm text-gray-500 mb-5">Select device type(s), tooth positions, and implant specifications.</p>
           <div className="grid grid-cols-2 gap-2 mb-5">{DEVICE_TYPES.map(d=><button key={d.key} onClick={()=>toggleDevice(d.key)} className={`text-left px-4 py-3 rounded-lg border text-sm transition ${device.types.includes(d.key)?"border-blue-500 bg-blue-50 text-blue-800 font-semibold":"border-gray-200 text-gray-600 hover:bg-gray-50"}`}>{device.types.includes(d.key)?"☑":"☐"} {d.label}<span className="ml-2 text-xs opacity-60">Class {d.class}</span></button>)}</div>
-          <div className="grid grid-cols-2 gap-4"><FormInput label="Tooth Positions" value={(device.teeth||[]).join(", ")} onChange={e=>setDevice(p=>({...p,teeth:e.target.value.split(",").map(t=>t.trim()).filter(Boolean)}))} placeholder="e.g. 14, 16, 24 or Full Arch Maxilla" span={2}/><FormInput label="Design Software" value={device.software} onChange={up(setDevice,"software")} placeholder="e.g. coDiagnostiX"/><FormInput label="Design Date" type="date" value={device.designDate} onChange={up(setDevice,"designDate")}/><FormInput label="Lab Reference" value={device.labRef} onChange={up(setDevice,"labRef")}/><FormInput label="Shade" value={device.shade} onChange={up(setDevice,"shade")}/><FormInput label="Clinical Notes" value={device.notes} onChange={up(setDevice,"notes")} span={2}/></div>
+
+          {/* TOOTH CHART */}
+          <div className="mb-5 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <label className="block text-xs font-semibold text-gray-500 mb-3">Tooth Positions (FDI)</label>
+            {/* Upper Jaw */}
+            <div className="text-center mb-1"><span className="text-[10px] font-semibold text-gray-400 tracking-wider uppercase">Upper Jaw</span></div>
+            <div className="flex justify-center items-center mb-1">
+              <div className="text-right mr-1"><span className="text-[9px] text-gray-400 font-semibold">Q1 (UR)</span></div>
+              <div className="flex gap-[2px]">{UPPER_RIGHT.map(t=><button key={t} onClick={()=>toggleTooth(t)} className={`w-[32px] h-[32px] rounded-md text-[11px] font-semibold transition-all ${device.teeth.includes(t)?"border-2 border-blue-500 bg-blue-100 text-blue-800":"border border-gray-300 bg-white text-gray-500 hover:bg-gray-100"}`}>{t}</button>)}</div>
+              <div className="w-[8px]"/>
+              <div className="flex gap-[2px]">{UPPER_LEFT.map(t=><button key={t} onClick={()=>toggleTooth(t)} className={`w-[32px] h-[32px] rounded-md text-[11px] font-semibold transition-all ${device.teeth.includes(t)?"border-2 border-blue-500 bg-blue-100 text-blue-800":"border border-gray-300 bg-white text-gray-500 hover:bg-gray-100"}`}>{t}</button>)}</div>
+              <div className="ml-1"><span className="text-[9px] text-gray-400 font-semibold">Q2 (UL)</span></div>
+            </div>
+            {/* Divider */}
+            <div className="flex justify-center my-1"><div className="w-[280px] border-t border-dashed border-gray-300"/></div>
+            {/* Lower Jaw */}
+            <div className="flex justify-center items-center mb-1">
+              <div className="text-right mr-1"><span className="text-[9px] text-gray-400 font-semibold">Q4 (LR)</span></div>
+              <div className="flex gap-[2px]">{LOWER_RIGHT.map(t=><button key={t} onClick={()=>toggleTooth(t)} className={`w-[32px] h-[32px] rounded-md text-[11px] font-semibold transition-all ${device.teeth.includes(t)?"border-2 border-blue-500 bg-blue-100 text-blue-800":"border border-gray-300 bg-white text-gray-500 hover:bg-gray-100"}`}>{t}</button>)}</div>
+              <div className="w-[8px]"/>
+              <div className="flex gap-[2px]">{LOWER_LEFT.map(t=><button key={t} onClick={()=>toggleTooth(t)} className={`w-[32px] h-[32px] rounded-md text-[11px] font-semibold transition-all ${device.teeth.includes(t)?"border-2 border-blue-500 bg-blue-100 text-blue-800":"border border-gray-300 bg-white text-gray-500 hover:bg-gray-100"}`}>{t}</button>)}</div>
+              <div className="ml-1"><span className="text-[9px] text-gray-400 font-semibold">Q3 (LL)</span></div>
+            </div>
+            <div className="text-center mt-1"><span className="text-[10px] font-semibold text-gray-400 tracking-wider uppercase">Lower Jaw</span></div>
+            {/* Arch Shortcuts */}
+            <div className="flex justify-center gap-2 mt-3">
+              {[["Full Upper Arch","🦷 Full Upper"],["Full Lower Arch","🦷 Full Lower"],["Full Mouth","🦷 Full Mouth"]].map(([key,lbl])=>
+                <button key={key} onClick={()=>toggleTooth(key)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${device.teeth.includes(key)?"bg-blue-600 text-white":"border border-gray-300 bg-white text-gray-600 hover:bg-gray-100"}`}>{lbl}</button>
+              )}
+            </div>
+            {device.teeth.length>0&&<div className="mt-2 text-center text-xs text-blue-600 font-medium">Selected: {device.teeth.filter(t=>t.length===2).sort().join(", ")}{device.teeth.includes("Full Upper Arch")?" · Full Upper Arch":""}{device.teeth.includes("Full Lower Arch")?" · Full Lower Arch":""}</div>}
+          </div>
+
+          {/* IMPLANT SYSTEM — show if surgical guide or fixation pin guide selected */}
+          {(device.types.includes("surgical_guide_3d")||device.types.includes("fixation_pin_guide"))&&<div className="mb-5 p-4 bg-blue-50 rounded-xl border border-blue-200">
+            <label className="block text-xs font-semibold text-blue-700 mb-2">Implant System</label>
+            <select value={device.implantSystem} onChange={e=>setDevice(p=>({...p,implantSystem:e.target.value,sleeveType:""}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500 mb-3">
+              <option value="">— Select implant system —</option>
+              {IMPLANT_SYSTEMS.map(s=><option key={s} value={s}>{s}</option>)}
+            </select>
+            {device.implantSystem==="Other (specify in notes)"&&<FormInput label="Implant System Details" value={device.implantDetails} onChange={e=>setDevice(p=>({...p,implantDetails:e.target.value}))} placeholder="Enter implant system name and specifications"/>}
+
+            {/* SLEEVE SPECIFICATIONS */}
+            {device.implantSystem&&device.implantSystem!=="Other (specify in notes)"&&<div className="mt-3">
+              <label className="block text-xs font-semibold text-blue-700 mb-2">Guided Surgery Sleeve</label>
+              <select value={device.sleeveType} onChange={e=>setDevice(p=>({...p,sleeveType:e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">— Select sleeve type —</option>
+                {(SLEEVE_OPTIONS[device.implantSystem]||SLEEVE_OPTIONS["default"]).map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>}
+            {device.implantSystem&&<div className="mt-3">
+              <label className="block text-xs font-semibold text-blue-700 mb-2">Fixation Pin Sleeve</label>
+              <select value={device.fixationSleeve} onChange={e=>setDevice(p=>({...p,fixationSleeve:e.target.value}))} className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">— None / Not applicable —</option>
+                <option value="Fixation Pin Sleeve 1.5mm">Fixation Pin Sleeve 1.5mm</option>
+                <option value="Fixation Pin Sleeve 1.2mm">Fixation Pin Sleeve 1.2mm</option>
+                <option value="Custom (specify in notes)">Custom (specify in notes)</option>
+              </select>
+            </div>}
+          </div>}
+
+          <div className="grid grid-cols-2 gap-4"><FormInput label="Design Software" value={device.software} onChange={up(setDevice,"software")} placeholder="e.g. coDiagnostiX"/><FormInput label="Design Date" type="date" value={device.designDate} onChange={up(setDevice,"designDate")}/><FormInput label="Lab Reference" value={device.labRef} onChange={up(setDevice,"labRef")}/><FormInput label="Shade" value={device.shade} onChange={up(setDevice,"shade")}/><FormInput label="Clinical Notes" value={device.notes} onChange={up(setDevice,"notes")} span={2}/></div>
         </div>}
 
         {step===3&&<div>
@@ -133,7 +249,7 @@ ${materials.printer?`<div style="font-size:7.5px;color:#4a6fa5;margin-top:3px">P
 
         {step===4&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Review & Sign</h2><p className="text-sm text-gray-500 mb-5">Verify details, then download.</p>
-          <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",(device.teeth||[]).join(", ")||"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass]].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
+          <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",device.teeth.filter(t=>t.length===2).sort().join(", ")||"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass],...(device.implantSystem?[["Implant System",device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem]]:[]),(device.sleeveType?[["Sleeve",device.sleeveType]]:[]),(device.fixationSleeve?[["Fixation Sleeve",device.fixationSleeve]]:[])].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
           <div className="border-t border-gray-100 pt-5"><h3 className="text-sm font-semibold text-gray-700 mb-3">Signature</h3>
             <div className="grid grid-cols-3 gap-4"><FormInput label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><FormInput label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><FormInput label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
             <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Appears after name on documents.</p></div></div>
