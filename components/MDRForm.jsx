@@ -942,6 +942,52 @@ ${invoice.notes?`<div class="notes-box"><strong>Notes:</strong> ${esc(invoice.no
   const handleDownloadMDR = async () => { setDownloading(true); download(generateMDR(),"-MDR"); await onSaveCase(caseRef,{mfr,prescriber,patient,device,materials,sign}); setDownloading(false); };
   const handleDownloadDelivery = () => { download(generateDeliveryNote(),"-DEL"); };
   const handleDownloadInvoice = () => { download(generateInvoice(),`_${invoiceRef}`); };
+
+  // Combined MDR + Invoice as one multi-page PDF
+  const generateBundle = () => {
+    const mdrHtml = generateMDR();
+    const invHtml = generateInvoice();
+    // Extract <style> and <body> from each
+    const extractStyle = (html) => { const m = html.match(/<style>([\s\S]*?)<\/style>/); return m?m[1]:""; };
+    const extractBody = (html) => { const m = html.match(/<body[^>]*>([\s\S]*?)<\/body>/); return m?m[1]:""; };
+    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${caseRef} — Full Case Bundle</title>
+<style>
+/* MDR styles */
+${extractStyle(mdrHtml)}
+/* Invoice styles — namespaced */
+.inv-page .ref-bar{padding:6px 12px;border:1px solid #d0dbe8;border-radius:5px;margin-bottom:10px;font-size:9px;display:flex;justify-content:space-between}
+.inv-page .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.inv-page .card{border:1px solid #d0dbe8;border-radius:6px;padding:10px 14px}
+.inv-page .card-title{font-size:8px;font-weight:700;text-transform:uppercase;color:#4a6fa5;margin-bottom:5px;letter-spacing:0.5px}
+.inv-page .card-row{font-size:10px;line-height:1.6;margin-bottom:1px}
+.inv-table{width:100%;border-collapse:collapse;margin:8px 0}
+.inv-table th{text-align:left;padding:6px 10px;font-size:8px;font-weight:700;color:#fff;background:#1e2a3a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.inv-table th:last-child,.inv-table td:last-child{text-align:right}
+.inv-table th:nth-child(3),.inv-table td:nth-child(3),.inv-table th:nth-child(4),.inv-table td:nth-child(4){text-align:right}
+.inv-table td{padding:6px 10px;font-size:10px;border-bottom:1px solid #e8eef5}
+.inv-table tr:last-child td{border-bottom:2px solid #d0dbe8}
+.inv-page .totals{display:flex;justify-content:flex-end;margin:6px 0 12px}
+.inv-page .totals-box{width:280px}
+.inv-page .totals-row{display:flex;justify-content:space-between;padding:4px 10px;font-size:10px}
+.inv-page .totals-row.total{font-size:13px;font-weight:700;border-top:2px solid #1e2a3a;padding-top:6px;margin-top:2px;color:#1e2a3a}
+.inv-page .bank-box{border:1px solid #d0dbe8;border-radius:6px;padding:10px 14px;margin:10px 0}
+.inv-page .bank-title{font-size:8px;font-weight:700;text-transform:uppercase;color:#4a6fa5;margin-bottom:4px}
+.inv-page .bank-row{font-size:9px;line-height:1.6}
+.inv-page .terms{font-size:9px;color:#5a7a8a;margin:8px 0;line-height:1.6}
+.inv-page .notes-box{border:1px dashed #c0d0e0;border-radius:6px;padding:8px 14px;margin:8px 0;font-size:9px;color:#5a7a8a}
+.inv-page .footer{border-top:1.5px solid #d0dae4;margin-top:12px;padding-top:6px;font-size:7.5px;color:#6a7a8a;display:flex;justify-content:space-between}
+/* Page break */
+.page-break{page-break-before:always;break-before:page;margin-top:0}
+</style></head><body>
+<!-- Page 1: MDR Form -->
+${extractBody(mdrHtml)}
+<!-- Page 2: Invoice -->
+<div class="page-break inv-page">
+${extractBody(invHtml)}
+</div>
+</body></html>`;
+  };
+  const handleDownloadBundle = async () => { setDownloading(true); download(generateBundle(),"-BUNDLE"); await onSaveCase(caseRef,{mfr,prescriber,patient,device,materials,sign,invoice}); setDownloading(false); };
   const handleSaveClinic = async () => { if(!prescriber.name)return; setClinicSaved("saving"); const code = prescriber.clinicCode || generateClinicCode(prescriber.name, prescriber.practice, prescriber.address); if(!prescriber.clinicCode) setPrescriber(p=>({...p,clinicCode:code})); const result=await onSaveClinic({name:prescriber.name,big:prescriber.big,practice:prescriber.practice,address:prescriber.address,phone:prescriber.phone,email:prescriber.email,clinic_code:code}); if(result?.error){setClinicSaved("error");console.error("Clinic save failed:",result.error);}else{setClinicSaved("done");} setTimeout(()=>setClinicSaved(""),3000); };
 
   
@@ -1140,9 +1186,10 @@ ${invoice.notes?`<div class="notes-box"><strong>Notes:</strong> ${esc(invoice.no
             <div className="grid grid-cols-3 gap-4"><FormInput label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><FormInput label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><FormInput label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
             <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Shown on delivery notes. For MDR forms, qualifications appear in the PRRC section (Settings).</p></div></div>
           <div className="flex gap-3 mt-8">
-            <button onClick={handleDownloadMDR} disabled={downloading||!sign.signerName} className="px-6 py-3 rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 transition shadow-sm">{downloading?"⏳ Generating...":"📄 MDR Form"}</button>
-            <button onClick={handleDownloadDelivery} disabled={!sign.signerName} className="px-6 py-3 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 disabled:opacity-40 transition shadow-sm">📦 Delivery Note</button></div>
-          <p className="text-xs text-gray-400 mt-3">Downloads as HTML — Print → Save as PDF. Files: <span className="font-mono">{mdrRef}.pdf</span>, <span className="font-mono">{delRef}.pdf</span></p>
+            <button onClick={handleDownloadBundle} disabled={downloading||!sign.signerName||!invoice.items.some(i=>i.name)} className="px-6 py-3 rounded-lg bg-blue-800 text-white font-bold text-sm hover:bg-blue-900 disabled:opacity-40 transition shadow-sm">{downloading?"⏳ Generating...":"📋 MDR + Invoice (1 PDF)"}</button>
+            <button onClick={handleDownloadMDR} disabled={downloading||!sign.signerName} className="px-5 py-3 rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 transition shadow-sm">📄 MDR only</button>
+            <button onClick={handleDownloadDelivery} disabled={!sign.signerName} className="px-5 py-3 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 disabled:opacity-40 transition shadow-sm">📦 Delivery</button></div>
+          <p className="text-xs text-gray-400 mt-3">Bundle = MDR form (page 1) + Invoice (page 2) in one PDF. Files: <span className="font-mono">{caseRef}.pdf</span></p>
 
           {/* ── INVOICE SECTION ── */}
           <div className="border-t-2 border-blue-200 mt-8 pt-6">
@@ -1216,8 +1263,8 @@ ${invoice.notes?`<div class="notes-box"><strong>Notes:</strong> ${esc(invoice.no
             </div>
 
             {/* Invoice download */}
-            <button onClick={handleDownloadInvoice} disabled={invoice.items.length===0||!invoice.items.some(i=>i.name)} className="px-6 py-3 rounded-lg bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 disabled:opacity-40 transition shadow-sm">💰 Download Invoice PDF</button>
-            <p className="text-xs text-gray-400 mt-2">Branded invoice PDF matching your MDR form design. Same Print → Save as PDF workflow.</p>
+            <button onClick={handleDownloadInvoice} disabled={invoice.items.length===0||!invoice.items.some(i=>i.name)} className="px-6 py-3 rounded-lg bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 disabled:opacity-40 transition shadow-sm">💰 Invoice only</button>
+            <p className="text-xs text-gray-400 mt-2">Or use the <strong>MDR + Invoice</strong> button above for a combined single PDF.</p>
           </div>
         </div>}
       </div>
