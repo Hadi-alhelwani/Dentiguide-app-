@@ -447,57 +447,113 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
   const [prescriber, setPrescriber] = useState({ name:"",big:"",practice:"",address:"",phone:"",email:"",orderRef:"",prescDate:new Date().toISOString().split("T")[0] });
   const [patient, setPatient] = useState({ method:"code", identifier:"" });
   const [device, setDevice] = useState({ types:[],teeth:[],shade:"A2",software:"",labRef:"",notes:"",designDate:"",implantSystem:"",implantDetails:"",sleeveType:"",fixationSleeve:"",fixationPinSystem:"" });
-  const [materials, setMaterials] = useState({ rows:[{material:"",manufacturer:"",batch:"",ceMarked:true}], printer:"",postProcess:"",processes:[],wash:"",cure:"",slicingSoftware:"",postProcessProtocol:"" });
+  const [materials, setMaterials] = useState({ ecosystem:"", rows:[{material:"",manufacturer:"",batch:"",ceMarked:true}], printer:"",postProcess:"",processes:[],wash:"",cure:"",slicingSoftware:"",postProcessProtocol:"" });
   const [sign, setSign] = useState({ signerName:settings.signer_name||"", signerTitle:settings.signer_title||"Managing Director", credentials:settings.signer_credentials||"", date:new Date().toISOString().split("T")[0], gsprExceptions:"" });
   const [docRef] = useState(()=>{ const y=new Date().getFullYear(); const c=(settings.doc_counter||0)+1; return `CMD-${y}-${String(c).padStart(4,"0")}`; });
   const [downloading, setDownloading] = useState(false);
   const [clinicSaved, setClinicSaved] = useState("");
 
   const selectClinic = (id) => { const c=clinics.find(x=>x.id===id); if(c) setPrescriber(p=>({...p,name:c.name,big:c.big,practice:c.practice,address:c.address,phone:c.phone,email:c.email})); };
+
+  // Find best preset for device types + ecosystem combo
+  const findPresets = (types, eco) => {
+    const presets = [];
+    types.forEach(t => {
+      const p = (DEVICE_MATERIAL_PRESETS[t]||[]).find(x=>x.ecosystem===eco);
+      if(p) presets.push({...p, deviceType: t});
+    });
+    return presets;
+  };
+
+  // Merge IFU protocols from multiple device presets
+  const mergeProtocols = (presets) => {
+    if(presets.length===0) return "";
+    if(presets.length===1) return presets[0].postProcess||"";
+    // Multi-device: label each section
+    return presets.map(p => {
+      const dt = DEVICE_TYPES.find(d=>d.key===p.deviceType);
+      return `── ${dt?.label||p.deviceType} ──\n${p.postProcess||""}`;
+    }).join("\n\n");
+  };
+
+  // Master ecosystem switch — drives printer, wash, cure, software, materials, processes, protocol
+  const switchEcosystem = (eco) => {
+    if(!eco) return;
+    const ecoData = ECOSYSTEMS[eco] || {};
+    const presets = findPresets(device.types, eco);
+    // Build material rows from presets (deduplicated)
+    const matMap = new Map();
+    presets.forEach(p => { if(!matMap.has(p.material)) matMap.set(p.material, {material:p.material, manufacturer:p.manufacturer, batch:"", ceMarked:true}); });
+    const rows = matMap.size>0 ? [...matMap.values()] : [{material:"",manufacturer:"",batch:"",ceMarked:true}];
+    // Merge processes
+    const allProcesses = [...new Set(presets.flatMap(p=>p.processes||[]))];
+    // Merge IFU protocols
+    const protocol = mergeProtocols(presets);
+    setMaterials({
+      ecosystem: eco, rows,
+      processes: allProcesses,
+      printer: ecoData.printer||"",
+      wash: ecoData.wash||"",
+      cure: ecoData.cure||"",
+      slicingSoftware: ecoData.software||"",
+      postProcessProtocol: protocol,
+    });
+  };
+
   const toggleDevice = (key) => {
-    setDevice(p=>({...p,types:p.types.includes(key)?p.types.filter(t=>t!==key):[...p.types,key]}));
-    // Auto-fill materials when adding a device type
+    const newTypes = device.types.includes(key) ? device.types.filter(t=>t!==key) : [...device.types, key];
+    setDevice(p=>({...p, types: newTypes}));
+    // When adding a device type, re-cascade with active ecosystem
     if(!device.types.includes(key)) {
-      const presets = DEVICE_MATERIAL_PRESETS[key];
-      if(presets && presets.length>0) {
-        const preset = presets[0]; // default to first option
-        const eco = ECOSYSTEMS[preset.ecosystem] || {};
-        setMaterials(p => {
-          const alreadyHas = p.rows.some(r=>r.material===preset.material);
-          let rows = [...p.rows];
-          if(!alreadyHas) {
-            const newRow = {material:preset.material,manufacturer:preset.manufacturer,batch:"",ceMarked:true};
-            rows = rows.length===1&&!rows[0].material ? [newRow] : [...rows,newRow];
-          }
-          const newProcesses = [...new Set([...p.processes,...(preset.processes||[])])];
-          return {
-            ...p, rows,
-            processes: newProcesses,
-            printer: p.printer||eco.printer||"",
-            wash: p.wash||eco.wash||"",
-            cure: p.cure||eco.cure||"",
-            slicingSoftware: p.slicingSoftware||eco.software||"",
-            postProcessProtocol: p.postProcessProtocol||preset.postProcess||"",
-          };
-        });
+      const eco = materials.ecosystem;
+      if(eco) {
+        // Re-run ecosystem cascade with updated device types
+        const ecoData = ECOSYSTEMS[eco] || {};
+        const presets = findPresets(newTypes, eco);
+        const matMap = new Map();
+        presets.forEach(p => { if(!matMap.has(p.material)) matMap.set(p.material, {material:p.material, manufacturer:p.manufacturer, batch:"", ceMarked:true}); });
+        // Keep existing batch numbers for materials that haven't changed
+        const rows = matMap.size>0 ? [...matMap.values()].map(r => {
+          const existing = materials.rows.find(x=>x.material===r.material);
+          return existing ? {...r, batch: existing.batch} : r;
+        }) : [{material:"",manufacturer:"",batch:"",ceMarked:true}];
+        const allProcesses = [...new Set(presets.flatMap(p=>p.processes||[]))];
+        const protocol = mergeProtocols(presets);
+        setMaterials(prev => ({
+          ...prev, rows,
+          processes: allProcesses,
+          postProcessProtocol: protocol,
+        }));
+      } else {
+        // No ecosystem yet — auto-select first available preset's ecosystem
+        const presets = DEVICE_MATERIAL_PRESETS[key];
+        if(presets && presets.length>0) {
+          const preset = presets[0];
+          const eco = ECOSYSTEMS[preset.ecosystem] || {};
+          setMaterials(p => {
+            const alreadyHas = p.rows.some(r=>r.material===preset.material);
+            let rows = [...p.rows];
+            if(!alreadyHas) {
+              const newRow = {material:preset.material,manufacturer:preset.manufacturer,batch:"",ceMarked:true};
+              rows = rows.length===1&&!rows[0].material ? [newRow] : [...rows,newRow];
+            }
+            const newProcesses = [...new Set([...p.processes,...(preset.processes||[])])];
+            return {
+              ...p, rows, ecosystem: preset.ecosystem,
+              processes: newProcesses,
+              printer: p.printer||eco.printer||"",
+              wash: p.wash||eco.wash||"",
+              cure: p.cure||eco.cure||"",
+              slicingSoftware: p.slicingSoftware||eco.software||"",
+              postProcessProtocol: p.postProcessProtocol||preset.postProcess||"",
+            };
+          });
+        }
       }
     }
   };
   const applyPreset = (preset) => {
-    const eco = ECOSYSTEMS[preset.ecosystem] || {};
-    setMaterials(p => {
-      // Replace all material rows with just the preset material
-      const rows = [{material:preset.material,manufacturer:preset.manufacturer,batch:"",ceMarked:true}];
-      return {
-        ...p, rows,
-        processes: [...new Set([...(preset.processes||[])])],
-        printer: eco.printer||"",
-        wash: eco.wash||"",
-        cure: eco.cure||"",
-        slicingSoftware: eco.software||"",
-        postProcessProtocol: preset.postProcess||"",
-      };
-    });
+    switchEcosystem(preset.ecosystem);
   };
   const toggleTooth = (t) => {
     setDevice(p => {
@@ -516,7 +572,27 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
     });
   };
   const addMatRow = () => setMaterials(p=>({...p,rows:[...p.rows,{material:"",manufacturer:"",batch:"",ceMarked:true}]}));
-  const upMat = (i,k,v) => setMaterials(p=>{const rows=[...p.rows];rows[i]={...rows[i],[k]:v};if(k==="material"&&MATERIAL_DETAILS[v]){rows[i].manufacturer=MATERIAL_DETAILS[v].manufacturer;const eco=ECOSYSTEMS[MATERIAL_DETAILS[v].ecosystem];if(eco){return{...p,rows,printer:eco.printer,wash:eco.wash,cure:eco.cure,slicingSoftware:eco.software};}}return{...p,rows};});
+  const upMat = (i,k,v) => setMaterials(p=>{
+    const rows=[...p.rows];rows[i]={...rows[i],[k]:v};
+    if(k==="material"&&MATERIAL_DETAILS[v]){
+      const matDetail = MATERIAL_DETAILS[v];
+      rows[i].manufacturer=matDetail.manufacturer;
+      const eco=ECOSYSTEMS[matDetail.ecosystem];
+      if(eco){
+        // Find matching IFU protocol for this material + device type combo
+        let protocol = p.postProcessProtocol;
+        for(const dt of device.types) {
+          const preset = (DEVICE_MATERIAL_PRESETS[dt]||[]).find(x=>x.material===v);
+          if(preset) { protocol = preset.postProcess||protocol; break; }
+        }
+        return{...p, rows, ecosystem: matDetail.ecosystem,
+          printer:eco.printer, wash:eco.wash, cure:eco.cure, slicingSoftware:eco.software,
+          postProcessProtocol: protocol,
+        };
+      }
+    }
+    return{...p,rows};
+  });
   const esc = (s) => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const fmtDate = (iso) => { if(!iso) return ""; const p=iso.split("-"); return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:iso; };
   const highestClass = device.types.some(t=>DEVICE_TYPES.find(d=>d.key===t)?.class==="IIa")?"IIa":"I";
@@ -591,7 +667,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:7.5px;c
 <div class="bx"><div class="bt">Materials &amp; Traceability (Annex XIII §2(a))</div><table class="mt"><thead><tr><th style="width:36%">Material</th><th style="width:26%">Manufacturer</th><th style="width:18%">Lot / Batch</th><th style="width:8%">CE</th><th style="width:12%">Expiry</th></tr></thead><tbody>${matRows.map(r=>`<tr><td>${esc(r.material)}</td><td>${esc(r.manufacturer)}</td><td><em>${esc(r.batch||"Per mfr records")}</em></td><td style="text-align:center">${r.ceMarked?"✓":"✗"}</td><td style="text-align:center">—</td></tr>`).join("")}</tbody></table></div>
 <div class="g3"><div class="cl"><div class="ct">Manufacturing Processes</div>${materials.processes.map(p=>`<div class="cr">✓ ${esc(p)}</div>`).join("")}</div>
 <div class="cl"><div class="ct">Equipment</div>${materials.printer?`<div class="cr"><strong>Printer:</strong> ${esc(materials.printer)}</div>`:""} ${materials.wash?`<div class="cr"><strong>Wash:</strong> ${esc(materials.wash)}</div>`:""} ${materials.cure?`<div class="cr"><strong>Cure:</strong> ${esc(materials.cure)}</div>`:""} ${materials.slicingSoftware?`<div class="cr"><strong>Software:</strong> ${esc(materials.slicingSoftware)}</div>`:""}</div>
-<div class="cl"><div class="ct">Post-Processing Protocol</div><div class="cr" style="white-space:pre-line;font-size:6px;line-height:1.35">${esc(materials.postProcessProtocol||"")}</div></div></div>
+<div class="cl"><div class="ct">Post-Processing Protocol</div><div class="cr" style="white-space:pre-line;font-size:6px;line-height:1.35">${esc(materials.postProcessProtocol||"")}</div><div style="font-size:5.5px;color:#3a5a7a;margin-top:2px;font-style:italic">Per manufacturer IFU — ${materials.ecosystem==="sprintray"?"SprintRay":materials.ecosystem==="formlabs"?"Formlabs":"Material manufacturer"} processing guidelines followed.</div></div></div>
 <div class="bx bio"><div class="bt">Biocompatibility Confirmation (Annex I GSPR)</div><div class="bg"><div><span class="ck">[x]</span> CE-marked biocompatible materials used for intended purpose</div><div><span class="ck">[x]</span> ISO 10993 biological safety covered by material manufacturer</div><div><span class="ck">[x]</span> Manufacturer IFU followed</div><div><span class="ck">[x]</span> No known allergens / hazards</div></div></div>
 <div class="bx"><div class="bt">Warnings &amp; Limitations</div>${warnings.map(w=>`<div class="wi">• ${esc(w)}</div>`).join("")}<div style="font-size:6px;color:#5a7a9a;text-align:right;font-style:italic">Case data consistency verified prior to manufacturing.</div></div>
 <div class="bx"><div class="dt">Manufacturer's Declaration — EU MDR 2017/745 Annex XIII §1</div><div class="rw" style="margin-bottom:2px">The undersigned declares that the custom-made device described herein:</div><div class="di"><strong>1.</strong> Is specifically made following a written prescription by a duly qualified medical practitioner, per Article 2(3) of EU MDR 2017/745;</div><div class="di"><strong>2.</strong> Is intended for the sole use of patient: <strong>${esc(patient.identifier)}</strong>;</div><div class="di"><strong>3.</strong> Conforms to the General Safety and Performance Requirements (GSPR) set out in Annex I;</div><div class="di"><strong>4.</strong> Has been manufactured in accordance with a documented Quality Management System (Article 10(9));</div><div class="di"><strong>5.</strong> Uses CE-marked materials and components per their intended purpose and manufacturer's IFU;</div><div class="di"><strong>6.</strong> Does not bear a CE marking (per Article 20(1) for custom-made devices);</div><div class="di"><strong>7.</strong> Is labelled as "custom-made device" / "Sonderanfertigung";</div><div class="di"><strong>8.</strong> Is exempt from UDI requirements per Article 27(1) as a custom-made device.</div></div>
@@ -744,22 +820,35 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:7.5px;c
         {step===3&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Materials & Processing</h2><p className="text-sm text-gray-500 mb-5">Specify all materials, equipment, and protocols.</p>
 
-          {/* Ecosystem quick-switch */}
-          {device.types.some(t=>DEVICE_MATERIAL_PRESETS[t]&&DEVICE_MATERIAL_PRESETS[t].length>1)&&<div className="p-3 bg-indigo-50 rounded-xl border border-indigo-200 mb-5">
-            <label className="block text-xs font-semibold text-indigo-700 mb-2">🔄 Quick Switch — Printer Ecosystem</label>
-            <p className="text-xs text-indigo-500 mb-2">Choose your printer ecosystem to auto-fill matching materials, equipment & protocol.</p>
+          {/* ECOSYSTEM SELECTOR — always visible for printable devices */}
+          <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-200 mb-5">
+            <label className="block text-xs font-semibold text-indigo-700 mb-2">🔄 Manufacturing Ecosystem</label>
+            <p className="text-xs text-indigo-500 mb-3">Select your printer/milling system — materials, equipment, protocols & IFU steps auto-fill.</p>
             <div className="flex flex-wrap gap-2">
-              {(() => {
-                const allPresets = [];
-                device.types.forEach(t => { (DEVICE_MATERIAL_PRESETS[t]||[]).forEach(p => { if(!allPresets.find(x=>x.ecosystem===p.ecosystem)) allPresets.push(p); }); });
-                return allPresets.map(p=><button key={p.label} onClick={()=>applyPreset(p)} className={`px-4 py-2 rounded-lg text-xs font-bold transition border ${materials.printer.includes(p.ecosystem==="sprintray"?"SprintRay":"Formlabs")?"bg-indigo-600 text-white border-indigo-600":"bg-white text-indigo-700 border-indigo-300 hover:bg-indigo-100"}`}>{p.label}</button>);
-              })()}
+              {[
+                {key:"sprintray", label:"🖨️ SprintRay Pro 55S", desc:"DLP · 385nm"},
+                {key:"formlabs", label:"🖨️ Formlabs Form 4B", desc:"MSLA · 405nm"},
+                {key:"milling", label:"⚙️ CAD/CAM Milling", desc:"Zirconia · PMMA · Ti"},
+              ].map(eco=>
+                <button key={eco.key} onClick={()=>switchEcosystem(eco.key)}
+                  className={`px-4 py-2.5 rounded-lg text-xs font-bold transition border flex flex-col items-start ${
+                    materials.ecosystem===eco.key
+                      ?"bg-indigo-600 text-white border-indigo-600 shadow-sm"
+                      :"bg-white text-indigo-700 border-indigo-300 hover:bg-indigo-100"
+                  }`}>
+                  <span>{eco.label}</span>
+                  <span className={`text-[10px] font-normal ${materials.ecosystem===eco.key?"text-indigo-200":"text-indigo-400"}`}>{eco.desc}</span>
+                </button>
+              )}
             </div>
-          </div>}
+            {materials.ecosystem && <div className="mt-3 text-xs text-indigo-600 font-medium">
+              ✅ {materials.ecosystem==="sprintray"?"SprintRay":materials.ecosystem==="formlabs"?"Formlabs":"Milling"} ecosystem active — equipment, materials & IFU protocol auto-filled
+            </div>}
+          </div>
 
           {materials.rows.map((r,i)=><div key={i} className="grid grid-cols-4 gap-3 mb-3">
             <div className="col-span-2"><label className="block text-xs font-semibold text-gray-500 mb-1">Material {i+1}</label>
-              <select value={r.material} onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">Select...</option>{MAT_OPTIONS.filter(m=>{const activeEco=materials.printer.includes("SprintRay")?"sprintray":materials.printer.includes("Formlabs")?"formlabs":"";return !activeEco||m.eco===activeEco||m.eco==="milling";}).map(m=><option key={m.name} value={m.name}>{m.name}</option>)}<option value="_custom">— Custom —</option></select>
+              <select value={r.material} onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="">Select...</option>{MAT_OPTIONS.filter(m=>{const eco=materials.ecosystem;return !eco||m.eco===eco||m.eco==="milling";}).map(m=><option key={m.name} value={m.name}>{m.name}</option>)}<option value="_custom">— Custom —</option></select>
               {r.material==="_custom"&&<input placeholder="Enter material" onChange={e=>upMat(i,"material",e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm mt-1 outline-none focus:ring-2 focus:ring-blue-500"/>}</div>
             <FormInput label="Manufacturer" value={r.manufacturer} onChange={e=>upMat(i,"manufacturer",e.target.value)}/><FormInput label="Lot/Batch" value={r.batch} onChange={e=>upMat(i,"batch",e.target.value)}/></div>)}
           <button onClick={addMatRow} className="text-sm text-blue-600 font-medium hover:underline mb-5">+ Add material row</button>
@@ -772,31 +861,33 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:7.5px;c
             )}</div>
           </div>
 
-          {/* EQUIPMENT */}
+          {/* EQUIPMENT — auto-filled, editable overrides */}
           <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 mb-4">
-            <label className="block text-xs font-semibold text-blue-700 mb-3">Equipment</label>
+            <label className="block text-xs font-semibold text-blue-700 mb-1">Equipment</label>
+            {materials.ecosystem && <p className="text-[10px] text-blue-500 mb-3">Auto-filled from {materials.ecosystem==="sprintray"?"SprintRay":materials.ecosystem==="formlabs"?"Formlabs":"Milling"} ecosystem. Override if needed.</p>}
             <div className="grid grid-cols-2 gap-3">
               <div><label className="block text-xs font-semibold text-gray-500 mb-1">Printer</label>
-                <input value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} placeholder="Auto-filled by ecosystem" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
+                <input value={materials.printer} onChange={e=>setMaterials(p=>({...p,printer:e.target.value}))} placeholder="Select ecosystem above" className={`w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500 ${materials.printer?"border-blue-300 bg-blue-50/50":"border-blue-200"}`} readOnly={!!materials.ecosystem}/></div>
               <div><label className="block text-xs font-semibold text-gray-500 mb-1">Wash Machine</label>
-                <input value={materials.wash} onChange={e=>setMaterials(p=>({...p,wash:e.target.value}))} placeholder="e.g. SprintRay ProWash S" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
+                <input value={materials.wash} onChange={e=>setMaterials(p=>({...p,wash:e.target.value}))} placeholder="Auto-filled" className={`w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500 ${materials.wash?"border-blue-300 bg-blue-50/50":"border-blue-200"}`}/></div>
               <div><label className="block text-xs font-semibold text-gray-500 mb-1">Cure Machine</label>
-                <input value={materials.cure} onChange={e=>setMaterials(p=>({...p,cure:e.target.value}))} placeholder="e.g. SprintRay ProCure 2" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
+                <input value={materials.cure} onChange={e=>setMaterials(p=>({...p,cure:e.target.value}))} placeholder="Auto-filled" className={`w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500 ${materials.cure?"border-blue-300 bg-blue-50/50":"border-blue-200"}`}/></div>
               <div><label className="block text-xs font-semibold text-gray-500 mb-1">Slicing Software</label>
-                <input value={materials.slicingSoftware} onChange={e=>setMaterials(p=>({...p,slicingSoftware:e.target.value}))} placeholder="e.g. RayWare" className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"/></div>
+                <input value={materials.slicingSoftware} onChange={e=>setMaterials(p=>({...p,slicingSoftware:e.target.value}))} placeholder="Auto-filled" className={`w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500 ${materials.slicingSoftware?"border-blue-300 bg-blue-50/50":"border-blue-200"}`}/></div>
             </div>
           </div>
 
-          {/* POST-PROCESSING PROTOCOL */}
+          {/* POST-PROCESSING PROTOCOL — auto-generated from IFU */}
           <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
-            <label className="block text-xs font-semibold text-amber-700 mb-2">Post-Processing Protocol</label>
-            <textarea value={materials.postProcessProtocol} onChange={e=>setMaterials(p=>({...p,postProcessProtocol:e.target.value}))} rows={6} placeholder="Step-by-step post-processing protocol..." className="w-full px-3 py-2 rounded-lg border border-amber-200 text-sm outline-none focus:ring-2 focus:ring-amber-400 resize-y font-mono"/>
+            <label className="block text-xs font-semibold text-amber-700 mb-1">Post-Processing Protocol (IFU)</label>
+            {materials.postProcessProtocol && <p className="text-[10px] text-amber-500 mb-2">Auto-generated from manufacturer IFU for selected device + material. Edit if needed.</p>}
+            <textarea value={materials.postProcessProtocol} onChange={e=>setMaterials(p=>({...p,postProcessProtocol:e.target.value}))} rows={6} placeholder="Select ecosystem & device type to auto-generate IFU protocol..." className="w-full px-3 py-2 rounded-lg border border-amber-200 text-sm outline-none focus:ring-2 focus:ring-amber-400 resize-y font-mono"/>
           </div>
         </div>}
 
         {step===4&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Review & Sign</h2><p className="text-sm text-gray-500 mb-5">Verify details, then download.</p>
-          <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",device.teeth.filter(t=>t.length===2).sort().join(", ")||"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass],...(device.implantSystem?[["Implant System",device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem]]:[]),(device.sleeveType?[["Sleeve",device.sleeveType]]:[]),(device.fixationSleeve?[["Fixation Sleeve",device.fixationSleeve]]:[]),(device.fixationPinSystem?[["Fixation Pin System",device.fixationPinSystem]]:[])].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
+          <div className="grid grid-cols-2 gap-4 mb-6">{[["Prescriber",`${prescriber.name} · BIG: ${prescriber.big}`],["Patient",patient.identifier],["Device",deviceLabel],["Teeth",device.teeth.filter(t=>t.length===2).sort().join(", ")||"—"],["Ecosystem",materials.ecosystem==="sprintray"?"SprintRay Pro 55S":materials.ecosystem==="formlabs"?"Formlabs Form 4B":materials.ecosystem==="milling"?"CAD/CAM Milling":"—"],["Materials",materials.rows.filter(r=>r.material).map(r=>r.material).join("; ")||"—"],["Class",highestClass],...(device.implantSystem?[["Implant System",device.implantSystem==="Other (specify in notes)"?device.implantDetails:device.implantSystem]]:[]),(device.sleeveType?[["Sleeve",device.sleeveType]]:[]),(device.fixationSleeve?[["Fixation Sleeve",device.fixationSleeve]]:[]),(device.fixationPinSystem?[["Fixation Pin System",device.fixationPinSystem]]:[])].map(([l,v])=><div key={l} className="p-3 bg-gray-50 rounded-lg"><div className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{l}</div><div className="text-sm text-gray-800 font-medium truncate">{v}</div></div>)}</div>
           <div className="border-t border-gray-100 pt-5"><h3 className="text-sm font-semibold text-gray-700 mb-3">Signature</h3>
             <div className="grid grid-cols-3 gap-4"><FormInput label="Name *" value={sign.signerName} onChange={up(setSign,"signerName")}/><FormInput label="Title" value={sign.signerTitle} onChange={up(setSign,"signerTitle")}/><FormInput label="Date" type="date" value={sign.date} onChange={up(setSign,"date")}/></div>
             <div className="mt-3"><FormInput label="Credentials" value={sign.credentials} onChange={up(setSign,"credentials")} placeholder="e.g. DDS · MSc Periodontics"/><p className="text-xs text-gray-400 mt-1">Shown on delivery notes. For MDR forms, qualifications appear in the PRRC section (Settings).</p></div></div>
