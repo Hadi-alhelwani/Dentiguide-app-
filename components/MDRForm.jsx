@@ -301,7 +301,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing"],
-      postProcess: "1) IPA 99% wash in SprintRay ProWash S — 5 min\n2) Air dry completely\n3) UV post-cure in SprintRay ProCure 2 — 30 min at 60°C\n4) Support removal & finishing\n5) Insert metal drill sleeves\n6) Optional: sterilisation per resin manufacturer's IFU and clinic protocol."
+      postProcess: "1) IPA 99% wash in SprintRay ProWash S — 5 min\n2) Air dry completely\n3) UV post-cure in SprintRay ProCure 2 — 30 min at 60°C\n4) Support removal & finishing\n5) Insert metal drill sleeves (verify sleeve seating & axis alignment)\n6) Verify guide seating on model\n7) Optional: sterilisation per resin manufacturer's IFU and clinic protocol"
     },
     {
       label: "Formlabs",
@@ -309,7 +309,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing"],
-      postProcess: "1) IPA 99% wash in Formlabs Form Wash — 5 min\n2) Remove from build platform\n3) Air dry completely — at least 30 min\n4) UV post-cure in Formlabs Form Cure V2 — 30 min at 60°C\n5) Support removal & finishing\n6) Insert metal drill sleeves\n7) Optional: autoclave sterilisation per Formlabs IFU (prevacuum, 134°C/3 min or 121°C/15 min)."
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — 5 min\n2) Remove from build platform\n3) Air dry completely — at least 30 min\n4) UV post-cure in Formlabs Form Cure V2 — 30 min at 60°C\n5) Support removal & finishing\n6) Insert metal drill sleeves (verify sleeve seating & axis alignment)\n7) Verify guide seating on model\n8) Optional: autoclave sterilisation per Formlabs IFU (prevacuum, 134°C/3 min or 121°C/15 min)"
     },
   ],
   crown_3d: [
@@ -319,7 +319,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC (tack cure between layers, final cure 5 min in ProCure 2)"
+      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Air dry completely\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n4) Support removal with carbide bur / fibre disc\n5) Check marginal fit on die/model\n6) Adjust proximal contacts and occlusion as needed\n7) Polish & finish for aesthetics\n8) Optional: characterise with VITA Akzent LC (tack cure between layers, final cure 5 min in ProCure 2)"
     },
     {
       label: "Formlabs",
@@ -327,7 +327,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per Premium Teeth IFU settings\n4) Support removal with carbide bur / fibre disc\n5) Polish for aesthetics\n6) Note: Use dedicated resin tank & build platform for biocompatible resins"
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per Premium Teeth IFU settings\n4) Support removal with carbide bur / fibre disc\n5) Check marginal fit on die/model\n6) Adjust proximal contacts and occlusion as needed\n7) Polish & finish for aesthetics\n8) Note: Use dedicated resin tank & build platform for biocompatible resins"
     },
   ],
   bridge_3d: [
@@ -337,7 +337,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Spray screw channels with IPA\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n   Alt: ProCure 1 — 60 min at 60°C\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Polish for aesthetics\n7) Optional: characterise with VITA Akzent LC"
+      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Air dry completely\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n4) Support removal with carbide bur / fibre disc\n5) Verify pontic clearance and connector dimensions\n6) Check marginal fit on abutments/model\n7) Polish & finish for aesthetics\n8) Optional: characterise with VITA Akzent LC"
     },
     {
       label: "Formlabs",
@@ -345,7 +345,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per Premium Teeth IFU settings\n4) Support removal\n5) Polish for aesthetics\n6) Note: Use dedicated resin tank & build platform for biocompatible resins"
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per Premium Teeth IFU settings\n4) Support removal with carbide bur / fibre disc\n5) Verify pontic clearance and connector dimensions\n6) Check marginal fit on abutments/model\n7) Polish & finish for aesthetics\n8) Note: Use dedicated resin tank & build platform for biocompatible resins"
     },
   ],
   crown_zirconia: [
@@ -355,7 +355,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "",
       ecosystem: "milling",
       processes: ["CAD/CAM Milling (Wet)", "Sintering", "Glazing / Staining"],
-      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Sintering — per manufacturer's IFU (typically 1450–1550°C, 6–8h cycle)\n3) Staining / characterisation\n4) Glaze firing\n5) Final inspection & fit check"
+      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Sintering — per manufacturer's IFU (typically 1450–1550°C, 6–8h cycle)\n3) Check marginal fit on die/model\n4) Staining / characterisation\n5) Glaze firing\n6) Final inspection — marginal integrity, proximal contacts, shade match"
     },
   ],
   bridge_zirconia: [
@@ -365,7 +365,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "",
       ecosystem: "milling",
       processes: ["CAD/CAM Milling (Wet)", "Sintering", "Glazing / Staining"],
-      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Sintering — per manufacturer's IFU\n3) Staining / characterisation\n4) Glaze firing\n5) Final inspection & fit check"
+      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Sintering — per manufacturer's IFU\n3) Verify pontic clearance and connector dimensions (min. 9mm² cross-section recommended)\n4) Check marginal fit on abutments/model\n5) Staining / characterisation\n6) Glaze firing\n7) Final inspection — connector integrity, marginal seal, shade match"
     },
   ],
   crown_pmma: [
@@ -375,7 +375,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "",
       ecosystem: "milling",
       processes: ["CAD/CAM Milling (Dry)", "Polishing / Finishing"],
-      postProcess: "1) CAD/CAM milling (dry)\n2) Support removal & finishing\n3) Polish for aesthetics\n4) Final inspection & fit check"
+      postProcess: "1) CAD/CAM milling (dry)\n2) Remove from disc & finish milling tags\n3) Check marginal fit on die/model\n4) Adjust proximal contacts and occlusion as needed\n5) Polish for aesthetics\n6) Final inspection & fit check"
     },
   ],
   bridge_pmma: [
@@ -385,7 +385,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "",
       ecosystem: "milling",
       processes: ["CAD/CAM Milling (Dry)", "Polishing / Finishing"],
-      postProcess: "1) CAD/CAM milling (dry)\n2) Support removal & finishing\n3) Polish for aesthetics\n4) Final inspection & fit check"
+      postProcess: "1) CAD/CAM milling (dry)\n2) Remove from disc & finish milling tags\n3) Verify pontic clearance and connector dimensions\n4) Check marginal fit on abutments/model\n5) Polish for aesthetics\n6) Final inspection & fit check"
     },
   ],
   titanium_bar: [
@@ -394,8 +394,8 @@ const DEVICE_MATERIAL_PRESETS = {
       material: "Grade 5 Titanium (Ti-6Al-4V) Disc",
       manufacturer: "",
       ecosystem: "milling",
-      processes: ["CAD/CAM Milling (Wet)", "Polishing / Finishing"],
-      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Support removal & finishing\n3) Sandblasting\n4) Polish for aesthetics\n5) Final inspection & screw-fit check"
+      processes: ["CAD/CAM Milling (Wet)", "Polishing / Finishing", "Sandblasting"],
+      postProcess: "1) CAD/CAM milling (wet, 5-axis)\n2) Remove from disc & finish milling tags\n3) Sandblast tissue-facing surfaces (Al₂O₃, 50–110µm)\n4) Verify passive fit on model (Sheffield/screw-resistance test)\n5) Check screw access channel alignment\n6) Polish prosthetic-facing surfaces\n7) Final inspection — screw seat, passive fit, surface finish"
     },
   ],
   ti_denture: [
@@ -405,7 +405,7 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "SprintRay Inc., Los Angeles, CA, USA",
       ecosystem: "sprintray",
       processes: ["3D Printing (DLP — SprintRay Pro 55S)", "IPA Wash", "UV Post-Curing (ProCure 2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Post-cure in SprintRay ProCure 2 — 5 min\n3) Support removal\n4) Bond to milled titanium bar\n5) Polish for aesthetics"
+      postProcess: "1) IPA wash in SprintRay ProWash S — OnX Tough profile\n2) Flush screw access channels with IPA syringe to remove residual resin\n3) Post-cure in SprintRay ProCure 2 — 5 min (385nm, auto-heat)\n4) Post-cure IPA spray + dry towel wipe (30 sec)\n5) Support removal with carbide bur / fibre disc\n6) Verify fit of resin structure on titanium bar\n7) Bond resin structure to milled titanium bar per bonding protocol\n8) Verify screw access channel patency\n9) Polish for aesthetics\n10) Optional: characterise with VITA Akzent LC"
     },
     {
       label: "Formlabs + Ti Bar",
@@ -413,9 +413,76 @@ const DEVICE_MATERIAL_PRESETS = {
       manufacturer: "Formlabs Inc., Somerville, MA, USA",
       ecosystem: "formlabs",
       processes: ["3D Printing (MSLA — Formlabs Form 4B)", "IPA Wash", "UV Post-Curing (Form Cure V2)", "Support Removal / Finishing", "Polishing / Finishing"],
-      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Air dry completely\n3) UV post-cure in Formlabs Form Cure V2 — per IFU settings\n4) Support removal\n5) Bond to milled titanium bar\n6) Polish for aesthetics"
+      postProcess: "1) IPA 99% wash in Formlabs Form Wash — per Premium Teeth IFU\n2) Flush screw access channels with IPA syringe to remove residual resin\n3) Air dry completely\n4) UV post-cure in Formlabs Form Cure V2 — per IFU settings\n5) Support removal\n6) Verify fit of resin structure on titanium bar\n7) Bond resin structure to milled titanium bar per bonding protocol\n8) Verify screw access channel patency\n9) Polish for aesthetics\n10) Note: Use dedicated resin tank & build platform for biocompatible resins"
     },
   ],
+};
+
+// ── PRICE LIST (synced with Exact Online) ──
+const PRICE_LIST = [
+  // Surgical Guides — tier by element count
+  { code:"1001", name:"Surgical Guide (1 element)", price:150, unit:"stuks", cat:"guide", tier:1 },
+  { code:"1002", name:"Surgical Guide (2 elements)", price:250, unit:"stuks", cat:"guide", tier:2 },
+  { code:"1003", name:"Surgical Guide (3 elements)", price:350, unit:"stuks", cat:"guide", tier:3 },
+  { code:"1004", name:"Surgical Guide (4+ elements)", price:450, unit:"stuks", cat:"guide", tier:4 },
+  { code:"1005", name:"Surgical Guide for Edentulous Cases", price:600, unit:"stuks", cat:"guide", tier:99 },
+  { code:"1006", name:"Bone Reduction Guide", price:7000, unit:"stuks", cat:"guide" },
+  // Crowns & Bridges
+  { code:"1008", name:"3D Printed Crown", price:250, unit:"stuks", cat:"crown" },
+  { code:"1009", name:"Bridge Dummy (pontic)", price:180, unit:"stuks", cat:"bridge" },
+  { code:"R34", name:"Crown on Implant (Zirconia)", price:698.26, unit:"stuks", cat:"crown_implant" },
+  { code:"zirc", name:"Full Zirconia Construction (4+ implants)", price:8090, unit:"stuks", cat:"zirconia_full" },
+  // Full-arch & Ti
+  { code:"1016", name:"Full Arch 3D Printed Bridge on Implants", price:1750, unit:"stuks", cat:"bridge_full" },
+  { code:"bar", name:"Titanium Bar with Locator Retention", price:2000, unit:"stuks", cat:"ti_bar" },
+  { code:"X1", name:"All-on-X Restoration", price:3500, unit:"stuks", cat:"all_on_x" },
+  { code:"overdenture", name:"Titanium-Reinforced Overdenture", price:900, unit:"stuks", cat:"overdenture" },
+  { code:"steg", name:"Titanium Steg (4+ implants)", price:885, unit:"stuks", cat:"ti_steg" },
+  // Dentures & Splints
+  { code:"1010", name:"Splint", price:175, unit:"stuks", cat:"splint" },
+  { code:"1011", name:"Full Removable Denture", price:700, unit:"stuks", cat:"denture" },
+  { code:"1013", name:"Pasprothese (Try-in Denture)", price:250, unit:"stuks", cat:"try_in" },
+  { code:"Nood", name:"Emergency Provisional (Noodvoorziening)", price:1200, unit:"stuks", cat:"provisional" },
+  // Digital & Add-ons
+  { code:"1007", name:"Digital Wax-Up (per element)", price:25, unit:"stuks", cat:"addon" },
+  { code:"1018", name:"Diagnostic Model", price:50, unit:"stuks", cat:"addon" },
+  { code:"1012", name:"Individual Impression Tray", price:150, unit:"stuks", cat:"addon" },
+  { code:"1015", name:"Individual Healing Abutment", price:150, unit:"stuks", cat:"addon" },
+  { code:"Smile", name:"Smile Design", price:350, unit:"stuks", cat:"addon" },
+  { code:"1", name:"3D Printed Anterior Tooth", price:75, unit:"stuks", cat:"addon" },
+  // Components
+  { code:"Ti", name:"Ti Base", price:35, unit:"stuks", cat:"component" },
+  { code:"DESS", name:"Prosthetic Screw", price:60, unit:"stuks", cat:"component" },
+  { code:"MUA", name:"Multi-Unit Abutment", price:100, unit:"stuks", cat:"component" },
+  { code:"IMP", name:"Implant", price:404.40, unit:"stuks", cat:"component" },
+  { code:"SRA", name:"Straumann BLX MUA", price:158.13, unit:"stuks", cat:"component" },
+  // Services
+  { code:"PIC", name:"Photogrammetry Implant Scanning", price:1000, unit:"day", cat:"service" },
+  { code:"chrome", name:"Full Magnetic Stackable Guide Set", price:3500, unit:"stuks", cat:"service" },
+  { code:"material", name:"Materials (pass-through)", price:0, unit:"stuks", cat:"material" },
+  { code:"reis", name:"Travel Expenses", price:0.37, unit:"km", cat:"service" },
+  // Services — hourly/daily
+  { code:"1_hr", name:"Services Rendered (per hour)", price:100, unit:"hour", cat:"service" },
+  { code:"2_day", name:"Services Rendered (per day)", price:1250, unit:"day", cat:"service" },
+];
+
+// Map MDR device types → best-fit price list item(s)
+const DEVICE_PRICE_MAP = {
+  surgical_guide_3d: (teethCount) => {
+    if(teethCount >= 14) return PRICE_LIST.find(p=>p.code==="1005"); // edentulous
+    if(teethCount >= 4) return PRICE_LIST.find(p=>p.code==="1004");
+    if(teethCount === 3) return PRICE_LIST.find(p=>p.code==="1003");
+    if(teethCount === 2) return PRICE_LIST.find(p=>p.code==="1002");
+    return PRICE_LIST.find(p=>p.code==="1001");
+  },
+  crown_3d: () => PRICE_LIST.find(p=>p.code==="1008"),
+  bridge_3d: () => PRICE_LIST.find(p=>p.code==="1016"),
+  crown_zirconia: () => PRICE_LIST.find(p=>p.code==="R34"),
+  bridge_zirconia: () => PRICE_LIST.find(p=>p.code==="zirc"),
+  crown_pmma: () => PRICE_LIST.find(p=>p.code==="1008"), // same price tier
+  bridge_pmma: () => PRICE_LIST.find(p=>p.code==="1016"),
+  titanium_bar: () => PRICE_LIST.find(p=>p.code==="bar"),
+  ti_denture: () => PRICE_LIST.find(p=>p.code==="X1"),
 };
 
 const MFG_PROCESSES = [
@@ -450,6 +517,8 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
   const [materials, setMaterials] = useState({ ecosystem:"", rows:[{material:"",manufacturer:"",batch:"",ceMarked:true}], printer:"",postProcess:"",processes:[],wash:"",cure:"",slicingSoftware:"",postProcessProtocol:"" });
   const [sign, setSign] = useState({ signerName:settings.signer_name||"", signerTitle:settings.signer_title||"Managing Director", credentials:settings.signer_credentials||"", date:new Date().toISOString().split("T")[0], gsprExceptions:"" });
   const [docRef] = useState(()=>{ const y=new Date().getFullYear(); const c=(settings.doc_counter||0)+1; return `CMD-${y}-${String(c).padStart(4,"0")}`; });
+  const [invoiceRef] = useState(()=>{ const y=new Date().getFullYear(); const c=(settings.invoice_counter||settings.doc_counter||0)+1; return `INV-${y}-${String(c).padStart(4,"0")}`; });
+  const [invoice, setInvoice] = useState({ items:[], vatRate:0, vatExempt:false, paymentTerms:"7 dagen netto", bankName:settings.bank_name||"", iban:settings.iban||"", bic:settings.bic||"", kvk:settings.kvk||"", btw:settings.btw_id||"", notes:"" });
   const [downloading, setDownloading] = useState(false);
   const [clinicSaved, setClinicSaved] = useState("");
 
@@ -599,6 +668,49 @@ export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic })
   const deviceLabel = device.types.map(t=>DEVICE_TYPES.find(d=>d.key===t)?.label||t).join(", ")||"Custom dental device";
   const canProceed = () => { switch(step){case 0:return prescriber.name;case 1:return patient.identifier;case 2:return device.types.length>0;case 3:return materials.rows.some(r=>r.material);case 4:return sign.signerName;default:return true;} };
 
+  // ── Invoice helpers ──
+  const detectVat = (addr, country) => {
+    const text = ((addr||"")+" "+(country||"")).toLowerCase();
+    const isNL = text.includes("nederland") || text.includes("netherlands") || /\b\d{4}\s?[a-z]{2}\b/.test(text) || text.includes(", nl");
+    if(isNL) return { vatRate:0, vatExempt:true }; // Dutch healthcare = BTW-vrijgesteld (Art.11 Wet OB 1968)
+    const isDE = text.includes("germany") || text.includes("deutschland") || /\b\d{5}\b/.test(text);
+    if(isDE) return { vatRate:19, vatExempt:false };
+    return { vatRate:0, vatExempt:false }; // EU B2B reverse charge default
+  };
+
+  const autoPopulateInvoice = () => {
+    const items = [];
+    const teethCount = device.teeth.filter(t=>t.length===2).length;
+    device.types.forEach(dt => {
+      const mapper = DEVICE_PRICE_MAP[dt];
+      if(!mapper) return;
+      const item = mapper(teethCount);
+      if(!item) return;
+      // Determine quantity: crowns = per tooth, most others = 1
+      let qty = 1;
+      if(["crown_3d","crown_zirconia","crown_pmma"].includes(dt)) qty = Math.max(1, teethCount);
+      if(["crown_3d","crown_zirconia","crown_pmma"].includes(dt) && teethCount > 1) {
+        // For multiple individual crowns
+        qty = teethCount;
+      }
+      items.push({ id: Date.now()+Math.random(), code:item.code, name:item.name, qty, price:item.price, unit:item.unit||"stuks" });
+    });
+    if(items.length===0) items.push({ id:Date.now(), code:"", name:"", qty:1, price:0, unit:"stuks" });
+    const vat = detectVat(prescriber.address, "");
+    setInvoice(prev=>({...prev, items, vatRate:vat.vatRate, vatExempt:vat.vatExempt}));
+  };
+
+  const addInvoiceItem = (code) => {
+    const item = code ? PRICE_LIST.find(p=>p.code===code) : null;
+    setInvoice(prev=>({...prev, items:[...prev.items, { id:Date.now()+Math.random(), code:item?.code||"", name:item?.name||"", qty:1, price:item?.price||0, unit:item?.unit||"stuks" }]}));
+  };
+  const removeInvoiceItem = (id) => setInvoice(prev=>({...prev, items:prev.items.filter(i=>i.id!==id)}));
+  const updateInvoiceItem = (id,field,val) => setInvoice(prev=>({...prev, items:prev.items.map(i=>i.id===id?{...i,[field]:val}:i)}));
+  const invoiceSubtotal = invoice.items.reduce((s,i)=>s+(i.qty*i.price),0);
+  const invoiceVat = invoiceSubtotal * (invoice.vatRate/100);
+  const invoiceTotal = invoiceSubtotal + invoiceVat;
+  const fmtEur = (n) => n.toLocaleString("nl-NL",{style:"currency",currency:"EUR"});
+
   const generateMDR = () => {
     const matRows = materials.rows.filter(r=>r.material);
     const isImplantable = device.types.some(t=>["titanium_bar","ti_denture"].includes(t));
@@ -695,6 +807,93 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:7.5px;c
 <div class="footer"><span>${esc(mfr.name)} · ${esc(mfr.city)}, ${esc(mfr.country)}</span><span>${docRef} · Generated ${new Date().toLocaleDateString()}</span></div></body></html>`;
   };
 
+  const generateInvoice = () => {
+    const showPractice = prescriber.practice && prescriber.practice.trim().toLowerCase()!==prescriber.name.trim().toLowerCase();
+    const items = invoice.items.filter(i=>i.name);
+    const LOGO_B64 = "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";
+    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Invoice — ${invoiceRef}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',system-ui,sans-serif;font-size:11px;color:#2a3e52;line-height:1.5}@page{size:A4;margin:12mm 15mm}@media print{body{font-size:10px;color:#000!important}.no-print{display:none!important}}
+.header{background:#1e2a3a;color:#fff;padding:14px 22px;margin-bottom:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px;font-weight:700;letter-spacing:0.5px}.header .sub{font-size:9px;opacity:0.7;margin-top:2px}
+.logo{height:30px;margin-right:12px}
+.ref-bar{padding:6px 12px;border:1px solid #d0dbe8;border-radius:5px;margin-bottom:10px;font-size:9px;display:flex;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.card{border:1px solid #d0dbe8;border-radius:6px;padding:10px 14px}
+.card-title{font-size:8px;font-weight:700;text-transform:uppercase;color:#4a6fa5;margin-bottom:5px;letter-spacing:0.5px}
+.card-row{font-size:10px;line-height:1.6;margin-bottom:1px}
+.inv-table{width:100%;border-collapse:collapse;margin:8px 0}
+.inv-table th{text-align:left;padding:6px 10px;font-size:8px;font-weight:700;color:#fff;background:#1e2a3a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.inv-table th:last-child,.inv-table td:last-child{text-align:right}
+.inv-table th:nth-child(3),.inv-table td:nth-child(3),.inv-table th:nth-child(4),.inv-table td:nth-child(4){text-align:right}
+.inv-table td{padding:6px 10px;font-size:10px;border-bottom:1px solid #e8eef5}
+.inv-table tr:last-child td{border-bottom:2px solid #d0dbe8}
+.totals{display:flex;justify-content:flex-end;margin:6px 0 12px}
+.totals-box{width:280px}
+.totals-row{display:flex;justify-content:space-between;padding:4px 10px;font-size:10px}
+.totals-row.total{font-size:13px;font-weight:700;border-top:2px solid #1e2a3a;padding-top:6px;margin-top:2px;color:#1e2a3a}
+.bank-box{border:1px solid #d0dbe8;border-radius:6px;padding:10px 14px;margin:10px 0}
+.bank-title{font-size:8px;font-weight:700;text-transform:uppercase;color:#4a6fa5;margin-bottom:4px}
+.bank-row{font-size:9px;line-height:1.6}
+.terms{font-size:9px;color:#5a7a8a;margin:8px 0;line-height:1.6}
+.notes-box{border:1px dashed #c0d0e0;border-radius:6px;padding:8px 14px;margin:8px 0;font-size:9px;color:#5a7a8a}
+.footer{border-top:1.5px solid #d0dae4;margin-top:12px;padding-top:6px;font-size:7.5px;color:#6a7a8a;display:flex;justify-content:space-between}
+</style></head><body>
+<div class="header">
+<div style="display:flex;align-items:center"><img src="data:image/png;base64,${LOGO_B64}" class="logo" alt=""/><div><h1>INVOICE</h1><div class="sub">Factuur</div></div></div>
+<div style="text-align:right"><div style="font-size:12px;font-weight:700">${esc(mfr.name)}</div><div style="font-size:8px;opacity:0.7">Custom Dental Devices · EU MDR 2017/745</div></div>
+</div>
+<div class="ref-bar">
+<div>Invoice: <strong>${invoiceRef}</strong>${docRef?` · MDR Ref: <strong>${docRef}</strong>`:""}</div>
+<div>Date: <strong>${fmtDate(sign.date)}</strong></div>
+</div>
+<div class="grid2">
+<div class="card"><div class="card-title">From — Manufacturer</div>
+<div class="card-row"><strong>${esc(mfr.name)}</strong></div>
+<div class="card-row">${esc(mfr.street)}</div>
+<div class="card-row">${esc(mfr.postal)} ${esc(mfr.city)}, ${esc(mfr.country)}</div>
+${mfr.phone?`<div class="card-row">Tel: ${esc(mfr.phone)}</div>`:""}
+${mfr.email?`<div class="card-row">${esc(mfr.email)}</div>`:""}
+${invoice.kvk?`<div class="card-row" style="margin-top:4px;font-size:9px;color:#6a8fa5">KvK: ${esc(invoice.kvk)}</div>`:""}
+${invoice.btw?`<div class="card-row" style="font-size:9px;color:#6a8fa5">BTW: ${esc(invoice.btw)}</div>`:""}
+</div>
+<div class="card"><div class="card-title">To — Client</div>
+<div class="card-row"><strong>${esc(prescriber.name)}</strong></div>
+${showPractice?`<div class="card-row">${esc(prescriber.practice)}</div>`:""}
+${prescriber.address?`<div class="card-row">${esc(prescriber.address)}</div>`:""}
+${prescriber.phone?`<div class="card-row">Tel: ${esc(prescriber.phone)}</div>`:""}
+${prescriber.email?`<div class="card-row">${esc(prescriber.email)}</div>`:""}
+</div>
+</div>
+<div class="card" style="margin-bottom:10px;padding:8px 14px">
+<div class="card-title">Patient / Case Reference</div>
+<div class="card-row">Patient: <strong>${esc(patient.identifier)}</strong> · Device: <strong>${esc(deviceLabel)}</strong></div>
+</div>
+<table class="inv-table">
+<thead><tr><th style="width:50px">#</th><th>Description</th><th style="width:60px">Qty</th><th style="width:100px">Unit Price</th><th style="width:110px">Amount</th></tr></thead>
+<tbody>
+${items.map((item,i)=>`<tr><td>${i+1}</td><td>${esc(item.name)}${item.code?` <span style="color:#8a9ab0;font-size:8px">(${esc(item.code)})</span>`:""}</td><td style="text-align:right">${item.qty}${item.unit&&item.unit!=="stuks"?` ${esc(item.unit)}`:""}</td><td style="text-align:right">${fmtEur(item.price)}</td><td style="text-align:right"><strong>${fmtEur(item.qty*item.price)}</strong></td></tr>`).join("")}
+</tbody>
+</table>
+<div class="totals"><div class="totals-box">
+<div class="totals-row"><span>Subtotal</span><span>${fmtEur(invoiceSubtotal)}</span></div>
+<div class="totals-row"><span>BTW / VAT ${invoice.vatExempt?'(Vrijgesteld — Art.11 Wet OB 1968)':`(${invoice.vatRate}%)`}</span><span>${fmtEur(invoiceVat)}</span></div>
+<div class="totals-row total"><span>Total</span><span>${fmtEur(invoiceTotal)}</span></div>
+</div></div>
+${(invoice.bankName||invoice.iban)?`<div class="bank-box"><div class="bank-title">Payment Details — Betalingsgegevens</div>
+${invoice.bankName?`<div class="bank-row">Bank: <strong>${esc(invoice.bankName)}</strong></div>`:""}
+${invoice.iban?`<div class="bank-row">IBAN: <strong>${esc(invoice.iban)}</strong></div>`:""}
+${invoice.bic?`<div class="bank-row">BIC: <strong>${esc(invoice.bic)}</strong></div>`:""}
+<div class="bank-row">Reference: <strong>${invoiceRef}</strong></div>
+</div>`:""}
+<div class="terms"><strong>Payment terms:</strong> ${esc(invoice.paymentTerms)}. Please quote invoice number <strong>${invoiceRef}</strong> on payment.${invoice.vatExempt?'<br/><em>BTW vrijgesteld op grond van artikel 11, lid 1, onderdeel g, sub 1° Wet op de omzetbelasting 1968 (medische hulpmiddelen op maat).</em>':''}</div>
+${invoice.notes?`<div class="notes-box"><strong>Notes:</strong> ${esc(invoice.notes)}</div>`:""}
+<div class="footer">
+<span>${esc(mfr.name)} · ${esc(mfr.street)}, ${esc(mfr.postal)} ${esc(mfr.city)} · ${esc(mfr.country)}</span>
+<span>${invoiceRef} · Generated ${new Date().toLocaleDateString()}</span>
+</div>
+</body></html>`;
+  };
+
   const download = (html, suffix) => {
     const win = window.open("","_blank");
     if(!win) { alert("Please allow popups to download PDF."); return; }
@@ -712,6 +911,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:7.5px;c
   };
   const handleDownloadMDR = async () => { setDownloading(true); download(generateMDR(),""); await onSaveCase(docRef,{mfr,prescriber,patient,device,materials,sign}); setDownloading(false); };
   const handleDownloadDelivery = () => { download(generateDeliveryNote(),"_DeliveryNote"); };
+  const handleDownloadInvoice = () => { download(generateInvoice(),"_Invoice"); };
   const handleSaveClinic = async () => { if(!prescriber.name)return; setClinicSaved("saving"); const result=await onSaveClinic({name:prescriber.name,big:prescriber.big,practice:prescriber.practice,address:prescriber.address,phone:prescriber.phone,email:prescriber.email}); if(result?.error){setClinicSaved("error");console.error("Clinic save failed:",result.error);}else{setClinicSaved("done");} setTimeout(()=>setClinicSaved(""),3000); };
 
   
@@ -895,6 +1095,82 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;font-size:7.5px;c
             <button onClick={handleDownloadMDR} disabled={downloading||!sign.signerName} className="px-6 py-3 rounded-lg bg-green-600 text-white font-bold text-sm hover:bg-green-700 disabled:opacity-40 transition shadow-sm">{downloading?"⏳ Generating...":"📄 Download MDR PDF"}</button>
             <button onClick={handleDownloadDelivery} disabled={!sign.signerName} className="px-6 py-3 rounded-lg bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 disabled:opacity-40 transition shadow-sm">📦 Download Delivery PDF</button></div>
           <p className="text-xs text-gray-400 mt-3">Both download as HTML — open in browser, then Print → Save as PDF.</p>
+
+          {/* ── INVOICE SECTION ── */}
+          <div className="border-t-2 border-blue-200 mt-8 pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div><h3 className="text-lg font-bold text-gray-800">💰 Invoice</h3><p className="text-sm text-gray-500">Invoice ref: <strong>{invoiceRef}</strong> — All fields editable.</p></div>
+              <button onClick={autoPopulateInvoice} className="px-4 py-2 rounded-lg bg-blue-100 text-blue-700 font-semibold text-xs hover:bg-blue-200 transition">⚡ Auto-populate from case</button>
+            </div>
+
+            {/* Line items */}
+            <div className="bg-gray-50 rounded-xl p-4 mb-4">
+              <div className="grid grid-cols-12 gap-2 mb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+                <div className="col-span-5">Description</div><div className="col-span-2">Qty</div><div className="col-span-2">Unit Price (€)</div><div className="col-span-2">Total</div><div className="col-span-1"></div>
+              </div>
+              {invoice.items.map((item)=>(
+                <div key={item.id} className="grid grid-cols-12 gap-2 mb-2 items-center">
+                  <div className="col-span-5"><input value={item.name} onChange={e=>updateInvoiceItem(item.id,"name",e.target.value)} placeholder="Item description" className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-blue-400"/></div>
+                  <div className="col-span-2"><input type="number" min="0" step="1" value={item.qty} onChange={e=>updateInvoiceItem(item.id,"qty",parseFloat(e.target.value)||0)} className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm text-right outline-none focus:ring-2 focus:ring-blue-400"/></div>
+                  <div className="col-span-2"><input type="number" min="0" step="0.01" value={item.price} onChange={e=>updateInvoiceItem(item.id,"price",parseFloat(e.target.value)||0)} className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm text-right outline-none focus:ring-2 focus:ring-blue-400"/></div>
+                  <div className="col-span-2 text-sm font-semibold text-gray-700 text-right pr-2">{fmtEur(item.qty*item.price)}</div>
+                  <div className="col-span-1"><button onClick={()=>removeInvoiceItem(item.id)} className="text-red-400 hover:text-red-600 text-lg leading-none" title="Remove">×</button></div>
+                </div>
+              ))}
+
+              {/* Add item */}
+              <div className="flex gap-2 mt-3">
+                <select onChange={e=>{if(e.target.value){addInvoiceItem(e.target.value);e.target.value="";}}} className="flex-1 px-2 py-1.5 rounded border border-gray-200 text-sm bg-white outline-none focus:ring-2 focus:ring-blue-400" defaultValue="">
+                  <option value="">+ Add item from catalog...</option>
+                  <optgroup label="Surgical Guides">{PRICE_LIST.filter(p=>p.cat==="guide").map(p=><option key={p.code} value={p.code}>{p.name} — {fmtEur(p.price)}</option>)}</optgroup>
+                  <optgroup label="Crowns & Bridges">{PRICE_LIST.filter(p=>["crown","bridge","crown_implant","zirconia_full","bridge_full"].includes(p.cat)).map(p=><option key={p.code} value={p.code}>{p.name} — {fmtEur(p.price)}</option>)}</optgroup>
+                  <optgroup label="Full-Arch & Titanium">{PRICE_LIST.filter(p=>["all_on_x","ti_bar","ti_steg","overdenture"].includes(p.cat)).map(p=><option key={p.code} value={p.code}>{p.name} — {fmtEur(p.price)}</option>)}</optgroup>
+                  <optgroup label="Dentures & Splints">{PRICE_LIST.filter(p=>["splint","denture","try_in","provisional"].includes(p.cat)).map(p=><option key={p.code} value={p.code}>{p.name} — {fmtEur(p.price)}</option>)}</optgroup>
+                  <optgroup label="Digital & Add-ons">{PRICE_LIST.filter(p=>p.cat==="addon").map(p=><option key={p.code} value={p.code}>{p.name} — {fmtEur(p.price)}</option>)}</optgroup>
+                  <optgroup label="Components">{PRICE_LIST.filter(p=>p.cat==="component").map(p=><option key={p.code} value={p.code}>{p.name} — {fmtEur(p.price)}</option>)}</optgroup>
+                  <optgroup label="Services">{PRICE_LIST.filter(p=>p.cat==="service").map(p=><option key={p.code} value={p.code}>{p.name} — {fmtEur(p.price)}</option>)}</optgroup>
+                </select>
+                <button onClick={()=>addInvoiceItem(null)} className="px-3 py-1.5 rounded bg-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-300 transition">+ Blank</button>
+              </div>
+            </div>
+
+            {/* Totals */}
+            <div className="flex justify-end mb-4">
+              <div className="w-72 bg-gray-50 rounded-xl p-4">
+                <div className="flex justify-between text-sm mb-1"><span className="text-gray-500">Subtotal</span><span className="font-medium">{fmtEur(invoiceSubtotal)}</span></div>
+                <div className="flex justify-between text-sm mb-2 items-center"><span className="text-gray-500 flex items-center gap-1">{invoice.vatExempt?<span className="text-green-600 text-xs font-semibold">VAT Exempt (NL Healthcare)</span>:<>VAT <input type="number" min="0" max="100" step="1" value={invoice.vatRate} onChange={e=>setInvoice(p=>({...p,vatRate:parseFloat(e.target.value)||0}))} className="w-12 px-1 py-0.5 rounded border border-gray-200 text-xs text-center outline-none"/>%</>}</span><span className="font-medium">{fmtEur(invoiceVat)}</span></div>
+                <div className="flex justify-between text-lg font-bold text-gray-800 border-t-2 border-gray-300 pt-2"><span>Total</span><span>{fmtEur(invoiceTotal)}</span></div>
+                {invoice.vatExempt&&<button onClick={()=>setInvoice(p=>({...p,vatExempt:false,vatRate:21}))} className="text-[10px] text-blue-500 hover:underline mt-1">Override: apply VAT</button>}
+                {!invoice.vatExempt&&invoice.vatRate>0&&<button onClick={()=>setInvoice(p=>({...p,vatExempt:true,vatRate:0}))} className="text-[10px] text-blue-500 hover:underline mt-1">Set as VAT exempt (NL healthcare)</button>}
+              </div>
+            </div>
+
+            {/* Bank & Payment details */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <label className="block text-xs font-semibold text-blue-700 mb-2">Bank Details</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <FormInput label="Bank Name" value={invoice.bankName} onChange={e=>setInvoice(p=>({...p,bankName:e.target.value}))} placeholder="e.g. ING Bank"/>
+                  <FormInput label="IBAN" value={invoice.iban} onChange={e=>setInvoice(p=>({...p,iban:e.target.value}))} placeholder="NL00 INGB 0000 0000 00"/>
+                  <FormInput label="BIC/SWIFT" value={invoice.bic} onChange={e=>setInvoice(p=>({...p,bic:e.target.value}))} placeholder="INGBNL2A"/>
+                  <FormInput label="Payment Terms" value={invoice.paymentTerms} onChange={e=>setInvoice(p=>({...p,paymentTerms:e.target.value}))}/>
+                </div>
+              </div>
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <label className="block text-xs font-semibold text-blue-700 mb-2">Business Registration</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <FormInput label="KvK Number" value={invoice.kvk} onChange={e=>setInvoice(p=>({...p,kvk:e.target.value}))} placeholder="12345678"/>
+                  <FormInput label="BTW-ID (VAT)" value={invoice.btw} onChange={e=>setInvoice(p=>({...p,btw:e.target.value}))} placeholder="NL000000000B01"/>
+                </div>
+                <div className="mt-2"><label className="block text-xs font-semibold text-gray-500 mb-1">Invoice Notes</label>
+                  <textarea value={invoice.notes} onChange={e=>setInvoice(p=>({...p,notes:e.target.value}))} rows={2} placeholder="Optional notes for the client..." className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-blue-400 resize-y"/></div>
+              </div>
+            </div>
+
+            {/* Invoice download */}
+            <button onClick={handleDownloadInvoice} disabled={invoice.items.length===0||!invoice.items.some(i=>i.name)} className="px-6 py-3 rounded-lg bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 disabled:opacity-40 transition shadow-sm">💰 Download Invoice PDF</button>
+            <p className="text-xs text-gray-400 mt-2">Branded invoice PDF matching your MDR form design. Same Print → Save as PDF workflow.</p>
+          </div>
         </div>}
       </div>
 
