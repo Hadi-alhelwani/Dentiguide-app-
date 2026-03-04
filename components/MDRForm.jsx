@@ -532,26 +532,27 @@ const generateClinicCode = (name, practice, address) => {
   return cityPart ? `${idPart}.${cityPart}` : idPart;
 };
 
-export default function MDRForm({ settings, clinics, onSaveCase, onSaveClinic }) {
+export default function MDRForm({ settings, clinics: initialClinics = [], onSaveCase, onSaveClinic }) {
   const [step, setStep] = useState(0);
-  const mfr = { name:settings.company_name, street:settings.street, postal:settings.postal, city:settings.city, country:settings.country, phone:settings.phone, email:settings.email, prrcName:settings.prrc_name, prrcQual:settings.prrc_qual, site2Name:settings.site2_name, site2Address:settings.site2_address };
+  const [clinics, setClinics] = useState(initialClinics);
+  const mfr = { name:settings?.company_name, street:settings?.street, postal:settings?.postal, city:settings?.city, country:settings?.country, phone:settings?.phone, email:settings?.email, prrcName:settings?.prrc_name, prrcQual:settings?.prrc_qual, site2Name:settings?.site2_name, site2Address:settings?.site2_address };
   const [prescriber, setPrescriber] = useState({ name:"",big:"",practice:"",address:"",phone:"",email:"",orderRef:"",prescDate:new Date().toISOString().split("T")[0], clinicCode:"" });
   const [patient, setPatient] = useState({ method:"code", identifier:"" });
   const [device, setDevice] = useState({ types:[],teeth:[],shade:"A2",software:"",labRef:"",notes:"",designDate:"",implantSystem:"",implantDetails:"",sleeveType:"",fixationSleeve:"",fixationPinSystem:"" });
   const [materials, setMaterials] = useState({ ecosystem:"", rows:[{material:"",manufacturer:"",batch:"",ceMarked:true}], printer:"",postProcess:"",processes:[],wash:"",cure:"",slicingSoftware:"",postProcessProtocol:"" });
-  const [sign, setSign] = useState({ signerName:settings.signer_name||"", signerTitle:settings.signer_title||"Managing Director", credentials:settings.signer_credentials||"", date:new Date().toISOString().split("T")[0], gsprExceptions:"" });
-  const [caseSeq] = useState(()=>{ const c=(settings.doc_counter||0)+1; return String(c).padStart(3,"0"); });
-  const [invoiceRef] = useState(()=>{ const y=new Date().getFullYear(); const c=(settings.invoice_counter||settings.doc_counter||0)+1; return `INV-${y}-${String(c).padStart(4,"0")}`; });
+  const [sign, setSign] = useState({ signerName:settings?.signer_name||"", signerTitle:settings?.signer_title||"Managing Director", credentials:settings?.signer_credentials||"", date:new Date().toISOString().split("T")[0], gsprExceptions:"" });
+  const [caseSeq] = useState(()=>{ const c=((settings?.doc_counter)||0)+1; return String(c).padStart(3,"0"); });
+  const [invoiceRef] = useState(()=>{ const y=new Date().getFullYear(); const c=((settings?.invoice_counter)||settings?.doc_counter||0)+1; return `INV-${y}-${String(c).padStart(4,"0")}`; });
   // Case ref derived from clinic code: DG-IMPL.AMS-2026-003
   const yr = new Date().getFullYear();
   const caseRef = prescriber.clinicCode ? `DG-${prescriber.clinicCode}-${yr}-${caseSeq}` : `DG-${yr}-${caseSeq}`;
   const mdrRef = `${caseRef}-MDR`;
   const delRef = `${caseRef}-DEL`;
-  const [invoice, setInvoice] = useState({ items:[], vatRate:0, vatExempt:false, paymentTerms:"7 dagen netto", bankName:settings.bank_name||"ABN AMRO", iban:settings.iban||"NL12ABNA0846523612", bic:settings.bic||"ABNANL2A", kvk:settings.kvk||"", btw:settings.btw_id||"NL003533498B25", accountHolder:settings.account_holder||"Abdulhadi Alhelwani", notes:"" });
+  const [invoice, setInvoice] = useState({ items:[], vatRate:0, vatExempt:false, paymentTerms:"7 dagen netto", bankName:settings?.bank_name||"ABN AMRO", iban:settings?.iban||"NL12ABNA0846523612", bic:settings?.bic||"ABNANL2A", kvk:settings?.kvk||"", btw:settings?.btw_id||"NL003533498B25", accountHolder:settings?.account_holder||"Abdulhadi Alhelwani", notes:"" });
   const [downloading, setDownloading] = useState(false);
   const [clinicSaved, setClinicSaved] = useState("");
 
-  const selectClinic = (id) => { const c=clinics.find(x=>x.id===id); if(c) { const code = c.clinic_code || generateClinicCode(c.name, c.practice, c.address); setPrescriber(p=>({...p,name:c.name,big:c.big,practice:c.practice,address:c.address,phone:c.phone,email:c.email,clinicCode:code})); } };
+  const selectClinic = (id) => { const c=clinics?.find(x=>x.id===id); if(c) { const code = c.clinic_code || generateClinicCode(c.name, c.practice, c.address); setPrescriber(p=>({...p,name:c.name,big:c.big,practice:c.practice,address:c.address,phone:c.phone,email:c.email,clinicCode:code})); } };
 
   // Find best preset for device types + ecosystem combo
   const findPresets = (types, eco) => {
@@ -1031,10 +1032,10 @@ ${extractBody(invHtml)}
 
         {step===0&&<div>
           <h2 className="text-lg font-bold text-gray-800 mb-1">Prescriber / Clinic</h2><p className="text-sm text-gray-500 mb-5">Select a saved clinic or enter new prescriber details.</p>
-          {clinics.length>0&&<div className="mb-5">
+          {clinics?.length>0&&<div className="mb-5">
             <label className="block text-xs font-semibold text-gray-500 mb-2">Saved Clinics</label>
             <div className="grid grid-cols-2 gap-2">
-              {clinics.map(c=><button key={c.id} onClick={()=>selectClinic(c.id)} className={`text-left p-3 rounded-lg border transition ${prescriber.name===c.name?"border-blue-500 bg-blue-50":"border-gray-200 hover:bg-gray-50"}`}>
+              {clinics?.map(c=><button key={c.id} onClick={()=>selectClinic(c.id)} className={`text-left p-3 rounded-lg border transition ${prescriber.name===c.name?"border-blue-500 bg-blue-50":"border-gray-200 hover:bg-gray-50"}`}>
                 <div className="flex justify-between items-start"><div className="text-sm font-semibold text-gray-800">{c.name}</div>{c.clinic_code&&<span className="text-[10px] font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">{c.clinic_code}</span>}</div>
                 {c.practice&&c.practice!==c.name&&<div className="text-xs text-gray-500">{c.practice}</div>}
                 {c.big&&<div className="text-[10px] text-gray-400 mt-0.5">BIG: {c.big}</div>}
@@ -1052,7 +1053,7 @@ ${extractBody(invHtml)}
             </div>
             <p className="text-[10px] text-blue-500 mt-1">Used in case references: <strong className="font-mono">DG-{prescriber.clinicCode||"????"}-{new Date().getFullYear()}-001</strong></p>
           </div>
-          {prescriber.name&&!clinics.some(c=>c.name===prescriber.name)&&<button onClick={handleSaveClinic} disabled={clinicSaved==="saving"} className={`mt-4 px-4 py-2 rounded-lg border text-sm font-medium transition ${clinicSaved==="done"?"border-green-300 bg-green-50 text-green-700":clinicSaved==="error"?"border-red-300 bg-red-50 text-red-700":"border-blue-200 text-blue-600 hover:bg-blue-50"}`}>{clinicSaved==="saving"?"⏳ Saving...":clinicSaved==="done"?"✅ Clinic saved!":clinicSaved==="error"?"❌ Error — check console":"💾 Save this clinic for future use"}</button>}
+          {prescriber.name&&!clinics?.some(c=>c.name===prescriber.name)&&<button onClick={handleSaveClinic} disabled={clinicSaved==="saving"} className={`mt-4 px-4 py-2 rounded-lg border text-sm font-medium transition ${clinicSaved==="done"?"border-green-300 bg-green-50 text-green-700":clinicSaved==="error"?"border-red-300 bg-red-50 text-red-700":"border-blue-200 text-blue-600 hover:bg-blue-50"}`}>{clinicSaved==="saving"?"⏳ Saving...":clinicSaved==="done"?"✅ Clinic saved!":clinicSaved==="error"?"❌ Error — check console":"💾 Save this clinic for future use"}</button>}
         </div>}
 
         {step===1&&<div>

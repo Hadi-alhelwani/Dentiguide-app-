@@ -123,7 +123,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push('/auth'); return; }
+      if (!user) { router.push('/login'); return; }
       setUser(user);
       await loadData();
     };
@@ -159,7 +159,7 @@ export default function DashboardPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push('/auth');
+    router.push('/login');
   };
 
   const formatDate = (iso) => {
@@ -171,7 +171,7 @@ export default function DashboardPage() {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Icons.Dashboard, href: '/dashboard' },
-    { id: 'new-mdr',   label: 'New MDR Form', icon: Icons.Form,      href: '/mdr-form' },
+    { id: 'new-mdr',   label: 'New MDR Form', icon: Icons.Form,      href: '/new' },
     { id: 'cases',     label: 'Cases',        icon: Icons.Cases,     href: '/cases' },
     { id: 'clinics',   label: 'Clinics',      icon: Icons.Clinics,   href: '/clinics' },
     { id: 'settings',  label: 'Settings',     icon: Icons.Settings,  href: '/settings' },
@@ -330,7 +330,7 @@ export default function DashboardPage() {
               {new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
-          <Link href="/mdr-form" style={{ textDecoration: 'none' }}>
+          <Link href="/new" style={{ textDecoration: 'none' }}>
             <button style={{
               display: 'flex', alignItems: 'center', gap: 8,
               background: 'linear-gradient(135deg, #00C9A7, #00A688)',
@@ -446,7 +446,7 @@ export default function DashboardPage() {
               </div>
               <p style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 600, color: '#334155' }}>No cases yet</p>
               <p style={{ margin: '0 0 20px', fontSize: 13, color: '#94A3B8' }}>Create your first MDR form to get started</p>
-              <Link href="/mdr-form" style={{ textDecoration: 'none' }}>
+              <Link href="/new" style={{ textDecoration: 'none' }}>
                 <button style={{
                   background: 'linear-gradient(135deg, #00C9A7, #00A688)',
                   color: '#fff', border: 'none', borderRadius: 8,
