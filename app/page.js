@@ -201,11 +201,6 @@ export default function LandingPage() {
           <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>Kanalweg 2C, 48529 Nordhorn, Germany</p>
         </div>
       </footer>
-
-      <style>{`
-        @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-      `}</style>
     </div>
   );
 }

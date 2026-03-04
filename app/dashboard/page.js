@@ -330,7 +330,7 @@ export default function DashboardPage() {
               {new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
-          <Link href="/new" style={{ textDecoration: 'none' }}>
+          <Link href="/mdr-form" style={{ textDecoration: 'none' }}>
             <button style={{
               display: 'flex', alignItems: 'center', gap: 8,
               background: 'linear-gradient(135deg, #00C9A7, #00A688)',
@@ -446,7 +446,7 @@ export default function DashboardPage() {
               </div>
               <p style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 600, color: '#334155' }}>No cases yet</p>
               <p style={{ margin: '0 0 20px', fontSize: 13, color: '#94A3B8' }}>Create your first MDR form to get started</p>
-              <Link href="/new" style={{ textDecoration: 'none' }}>
+              <Link href="/mdr-form" style={{ textDecoration: 'none' }}>
                 <button style={{
                   background: 'linear-gradient(135deg, #00C9A7, #00A688)',
                   color: '#fff', border: 'none', borderRadius: 8,
